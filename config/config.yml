@@ -1,0 +1,6 @@
+http:
+  port: '8080'
+
+postgres:
+  pool_max: 2
+  pg_url: "postgres://postgres:postgres@localhost/**NAME-OF-YOUR-DATABASE-HERE**?sslmode=disable"
