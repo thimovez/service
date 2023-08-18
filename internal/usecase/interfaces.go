@@ -1,11 +1,24 @@
 package usecase
 
+import "github.com/thimovez/service/internal/entity"
+
 type (
-	User interface {
-		Login(username, password string) error
+	UserService interface {
+		Login(user entity.UserRequest) error
+	}
+
+	TokenService interface {
+		GenerateAccessToken()
+		VerifyAccessToken() error
 	}
 
 	UserRepo interface {
-		SaveUser(id int64, username, password string) error
+		SaveUser(user entity.UserRequest) error
+		CheckUsername(username string) error
+	}
+
+	ImageRepo interface {
+		SaveImage(image entity.Image) error
+		GetImages() error
 	}
 )

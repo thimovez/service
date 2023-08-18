@@ -9,16 +9,16 @@ import (
 )
 
 type userRoutes struct {
-	t usecase.User
+	u usecase.UserService
 }
 
-func NewUserRoutes(handler *http.ServeMux, t usecase.User) {
-	r := &userRoutes{t}
+func NewUserRoutes(handler *http.ServeMux, u usecase.UserService) {
+	r := &userRoutes{u}
 
 	handler.HandleFunc("/login", r.login)
 }
 
-func (r *userRoutes) login(w http.ResponseWriter, req *http.Request) {
+func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		w.Write([]byte("invalid method"))
 		return
@@ -31,7 +31,7 @@ func (r *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	err = r.t.Login(user.Username, user.Password)
+	err = u.u.Login(user)
 	if err != nil {
 		log.Fatalf("login service error %s", err)
 	}
