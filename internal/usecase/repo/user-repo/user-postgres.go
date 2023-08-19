@@ -27,11 +27,13 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 func (u *UserRepo) CheckUsername(username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
-	count := 0
-	row := u.db.QueryRow(q, username).Scan(&count)
-	if count != 0 {
-		return row
+	var user sql.NullString
+	err := u.db.QueryRow(q, username).Scan(&user)
+	if !user.Valid {
+		if err == sql.ErrNoRows {
+			return nil
+		}
 	}
 
-	return nil
+	return err
 }
