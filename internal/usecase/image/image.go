@@ -28,6 +28,10 @@ func (u *ImageUseCase) SaveImage(image entity.Image) error {
 	return nil
 }
 
-func (u *ImageUseCase) GetImages() (images []string, err error) {
-	return
+func (u *ImageUseCase) GetImages() (images []entity.Image, err error) {
+	images, err = u.image.GetImages()
+	if err != nil {
+		return nil, err
+	}
+	return images, nil
 }
