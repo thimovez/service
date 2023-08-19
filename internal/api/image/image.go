@@ -1,4 +1,4 @@
-package http1
+package image
 
 import (
 	"encoding/json"
