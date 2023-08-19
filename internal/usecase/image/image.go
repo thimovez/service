@@ -31,7 +31,7 @@ func (u *ImageUseCase) SaveImage(image entity.Image) error {
 func (u *ImageUseCase) GetImages() (images []entity.Image, err error) {
 	images, err = u.image.GetImages()
 	if err != nil {
-		return nil, err
+		return
 	}
 	return images, nil
 }

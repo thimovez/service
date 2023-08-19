@@ -23,12 +23,12 @@ func New(r usecase.UserRepo, t usecase.TokenService) *UserUseCase {
 func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err error) {
 	err = u.repo.CheckUsername(user.Username)
 	if err != nil {
-		return "", err
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", nil
+		return
 	}
 	user.Password = string(hashedPassword)
 
@@ -37,13 +37,13 @@ func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err er
 
 	err = u.repo.SaveUser(user)
 	if err != nil {
-		return "", nil
+		return
 	}
 
 	expiration := time.Now().Add(time.Hour * 12)
 	accessToken, err = u.token.GenerateAccessToken(user.ID, expiration)
 	if err != nil {
-		return "", nil
+		return
 	}
 
 	return accessToken, nil

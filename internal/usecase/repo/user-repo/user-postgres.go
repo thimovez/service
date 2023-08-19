@@ -24,7 +24,6 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	return nil
 }
 
-//TODO fix this function
 func (u *UserRepo) CheckUsername(username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 

@@ -22,7 +22,7 @@ func (u *TokenUseCase) GenerateAccessToken(userID string, expiration time.Time) 
 
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return "", err
+		return
 	}
 
 	return tokenString, nil
