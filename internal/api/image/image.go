@@ -75,13 +75,11 @@ func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
 }
 
 func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodGet {
 		w.Write([]byte("invalid method"))
 		return
 	}
 
-	// TODO write service for GetImages
 	images, err := i.i.GetImages()
 	if err != nil {
 		log.Fatalf("login service error %s", err)
@@ -93,6 +91,7 @@ func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(marshal)
 }
