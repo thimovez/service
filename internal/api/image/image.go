@@ -2,10 +2,13 @@ package image
 
 import (
 	"encoding/json"
-	"github.com/thimovez/service/internal/entity"
+	"fmt"
 	"github.com/thimovez/service/internal/usecase"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type imageRouter struct {
@@ -20,32 +23,69 @@ func NewImageRoutes(handler *http.ServeMux, i usecase.ImageRepo) {
 }
 
 func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodPost {
 		w.Write([]byte("invalid method"))
 		return
 	}
 
-	decoder := json.NewDecoder(req.Body)
-	var image entity.Image
-	err := decoder.Decode(&image)
+	// Parse the incoming form file
+	err := req.ParseMultipartForm(10 << 20) // 10 MB limit
 	if err != nil {
-		panic(err)
+		http.Error(w, "Unable to parse form", http.StatusBadRequest)
+		return
 	}
 
-	err = i.i.SaveImage(image)
+	file, handler, err := req.FormFile("image")
 	if err != nil {
-		log.Fatalf("upload picture error %s", err)
+		http.Error(w, "Unable to read file", http.StatusBadRequest)
+		return
 	}
+	defer file.Close()
+
+	// Save the uploaded file to a directory (you can change the path as needed)
+	uploadDir := "../uploads"
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		os.Mkdir(uploadDir, 0755)
+	}
+
+	filePath := filepath.Join(uploadDir, handler.Filename)
+	out, err := os.Create(filePath)
+	if err != nil {
+		http.Error(w, "Unable to create the file", http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		http.Error(w, "Unable to copy the file", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "File uploaded successfully")
 }
 
 func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodGet {
 		w.Write([]byte("invalid method"))
 		return
 	}
 
-	err := i.i.GetImages()
+	// TODO write service for GetImages
+	images, err := i.i.GetImages()
 	if err != nil {
 		log.Fatalf("login service error %s", err)
 	}
+
+	marshal, err := json.Marshal(images)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(marshal)
+
 }
