@@ -28,7 +28,7 @@ func (u *TokenUseCase) GenerateAccessToken(userID string, expiration time.Time) 
 	return tokenString, nil
 }
 
-func (u *TokenUseCase) VerifyAccessToken(tokenString string) (*jwt.Token, error) {
+func (u *TokenUseCase) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Make sure to validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -43,9 +43,10 @@ func (u *TokenUseCase) VerifyAccessToken(tokenString string) (*jwt.Token, error)
 		return nil, err
 	}
 
-	if _, ok := token.Claims.(jwt.Claims); !ok || !token.Valid {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	return token, nil
+	return claims, nil
 }
