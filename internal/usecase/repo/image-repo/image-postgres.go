@@ -42,7 +42,7 @@ func (i *ImageRepo) GetImages() (images []entity.Image, err error) {
 		images = append(images, img)
 	}
 
-	if err := row.Err(); err != nil {
+	if err = row.Err(); err != nil {
 		return
 	}
 
