@@ -3,7 +3,6 @@ package user_repo
 import (
 	"database/sql"
 	"github.com/thimovez/service/internal/entity"
-	"log"
 )
 
 type UserRepo struct {
@@ -25,14 +24,14 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	return nil
 }
 
-// TODO
+//TODO fix this function
 func (u *UserRepo) CheckUsername(username string) error {
-	q := `SELECT username FROM users WHERE username = $1`
+	q := `SELECT ( username ) FROM users WHERE username = $1`
 
 	count := 0
-	u.db.QueryRow(q, username).Scan(&count)
+	row := u.db.QueryRow(q, username).Scan(&count)
 	if count != 0 {
-		log.Fatal("erorr")
+		return row
 	}
 
 	return nil

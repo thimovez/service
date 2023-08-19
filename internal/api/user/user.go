@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase"
-	"log"
 	"net/http"
 )
 
@@ -19,6 +18,7 @@ func NewUserRoutes(handler *http.ServeMux, u usecase.UserService) {
 }
 
 func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodPost {
 		w.Write([]byte("invalid method"))
 		return
@@ -28,13 +28,13 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	var user entity.UserRequest
 	err := decoder.Decode(&user)
 	if err != nil {
-		log.Fatalf("error decode %s", err)
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	accessToken, err := u.u.Login(user)
 	if err != nil {
-		w.Write([]byte("login service error"))
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
@@ -42,10 +42,10 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 		AccessToken: accessToken,
 	})
 	if err != nil {
-		log.Fatalf("marshal error %s", err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
+	w.WriteHeader(http.StatusOK)
 	w.Write(marshal)
 }
