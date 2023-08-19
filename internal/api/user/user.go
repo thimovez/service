@@ -28,13 +28,13 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	var user entity.UserRequest
 	err := decoder.Decode(&user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	accessToken, err := u.u.Login(user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -42,7 +42,7 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 		AccessToken: accessToken,
 	})
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
