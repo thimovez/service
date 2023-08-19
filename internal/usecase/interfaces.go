@@ -23,6 +23,6 @@ type (
 
 	ImageRepo interface {
 		SaveImage(image entity.Image) error
-		GetImages() (images []string, err error)
+		GetImages() (images []entity.Image, err error)
 	}
 )
