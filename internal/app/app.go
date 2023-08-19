@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/thimovez/service/config"
 	imageAPI "github.com/thimovez/service/internal/api/image"
+	"github.com/thimovez/service/internal/api/middlewares"
 	userAPI "github.com/thimovez/service/internal/api/user"
 	"github.com/thimovez/service/internal/usecase/image"
 	"github.com/thimovez/service/internal/usecase/repo/image-repo"
@@ -30,9 +31,10 @@ func Run(cfg *config.Config) {
 	imageCase := image.New(imageRepo)
 
 	mux := http.NewServeMux()
+	m := middlewares.New(tokenCase)
 
 	userAPI.NewUserRoutes(mux, userCase)
-	imageAPI.NewImageRoutes(mux, imageCase)
+	imageAPI.NewImageRoutes(mux, imageCase, m)
 
 	http.ListenAndServe(cfg.HTTP.Port, mux)
 }
