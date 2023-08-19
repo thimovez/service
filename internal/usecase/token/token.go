@@ -1,21 +1,51 @@
 package token
 
-import "github.com/thimovez/service/internal/usecase"
+import (
+	"fmt"
+	"github.com/golang-jwt/jwt/v5"
+	"time"
+)
 
-type TokenUseCase struct {
-	token usecase.TokenService
+const secretKey = "secret"
+
+type TokenUseCase struct{}
+
+func New() *TokenUseCase {
+	return &TokenUseCase{}
 }
 
-func New(t usecase.TokenService) *TokenUseCase {
-	return &TokenUseCase{
-		token: t,
+func (u *TokenUseCase) GenerateAccessToken(userID string, expiration time.Time) (accessToken string, err error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userID": userID,
+		"exp":    expiration.Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", err
 	}
+
+	return tokenString, nil
 }
 
-func (u *TokenUseCase) GenerateAccessToken() {
+func (u *TokenUseCase) VerifyAccessToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Make sure to validate the signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 
-}
+		// Return the secret key used for signing
+		return []byte(secretKey), nil
+	})
 
-func (u *TokenUseCase) VerifyAccessToken() error {
-	return nil
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := token.Claims.(jwt.Claims); !ok || !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return token, nil
 }
