@@ -13,7 +13,7 @@ type (
 
 	TokenService interface {
 		GenerateAccessToken(userID string, expiration time.Time) (string, error)
-		VerifyAccessToken(tokenString string) (*jwt.Token, error)
+		VerifyAccessToken(tokenString string) (jwt.MapClaims, error)
 	}
 
 	UserRepo interface {
