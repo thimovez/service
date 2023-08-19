@@ -3,6 +3,7 @@ package image_repo
 import (
 	"database/sql"
 	"github.com/thimovez/service/internal/entity"
+	"log"
 )
 
 type ImageRepo struct {
@@ -24,7 +25,7 @@ func (i *ImageRepo) SaveImage(image entity.Image) error {
 	return nil
 }
 
-func (i *ImageRepo) GetImages() (images []string, err error) {
+func (i *ImageRepo) GetImages() (images []entity.Image, err error) {
 	q := `SELECT * FROM images`
 
 	row, err := i.db.Query(q)
@@ -32,9 +33,17 @@ func (i *ImageRepo) GetImages() (images []string, err error) {
 		return
 	}
 
-	images, err = row.Columns()
-	if err != nil {
-		return
+	for row.Next() {
+		var img entity.Image
+		err := row.Scan(&img.ID, &img.UserID, &img.ImagePath, &img.ImageURL)
+		if err != nil {
+			log.Fatal(err)
+		}
+		images = append(images, img)
+	}
+
+	if err := row.Err(); err != nil {
+		return nil, err
 	}
 
 	return images, nil
