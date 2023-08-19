@@ -2,8 +2,8 @@ package user_repo
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/thimovez/service/internal/entity"
+	"log"
 )
 
 type UserRepo struct {
@@ -14,7 +14,6 @@ func New(db *sql.DB) *UserRepo {
 	return &UserRepo{db}
 }
 
-//TODO add uuid
 func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	q := `INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)`
 
@@ -30,11 +29,11 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 func (u *UserRepo) CheckUsername(username string) error {
 	q := `SELECT username FROM users WHERE username = $1`
 
-	row, err := u.db.Query(q, username)
-	if err != nil {
-		return err
+	count := 0
+	u.db.QueryRow(q, username).Scan(&count)
+	if count != 0 {
+		log.Fatal("erorr")
 	}
-	fmt.Println(row)
 
 	return nil
 }
