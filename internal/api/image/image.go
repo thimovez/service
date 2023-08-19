@@ -2,10 +2,9 @@ package image
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/thimovez/service/internal/api/middlewares"
+	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -24,12 +23,12 @@ func NewImageRoutes(handler *http.ServeMux, i usecase.ImageRepo, m *middlewares.
 }
 
 func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodPost {
 		w.Write([]byte("invalid method"))
 		return
 	}
 
+	userID := req.PostForm.Get("userID")
 	// Parse the incoming form file
 	err := req.ParseMultipartForm(10 << 20) // 10 MB limit
 	if err != nil {
@@ -50,21 +49,29 @@ func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
 		os.Mkdir(uploadDir, 0755)
 	}
 
-	filePath := filepath.Join(uploadDir, handler.Filename)
-	out, err := os.Create(filePath)
+	url := req.URL
+	imageURL := filepath.Join(url.String(), handler.Filename)
+	imagePath := filepath.Join(uploadDir, handler.Filename)
+	out, err := os.Create(imagePath)
 	if err != nil {
 		http.Error(w, "Unable to create the file", http.StatusInternalServerError)
 		return
 	}
 	defer out.Close()
+	image := entity.Image{
+		ID:        "",
+		UserID:    userID,
+		ImagePath: imagePath,
+		ImageURL:  imageURL,
+	}
 
-	_, err = io.Copy(out, file)
+	err = i.i.SaveImage(image)
 	if err != nil {
-		http.Error(w, "Unable to copy the file", http.StatusInternalServerError)
+		http.Error(w, "Error save file", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintf(w, "File uploaded successfully")
+	w.Write([]byte("success"))
 }
 
 func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
@@ -88,5 +95,4 @@ func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(marshal)
-
 }

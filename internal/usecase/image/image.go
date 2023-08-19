@@ -1,6 +1,7 @@
 package image
 
 import (
+	"github.com/google/uuid"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase"
 )
@@ -16,9 +17,17 @@ func New(i usecase.ImageRepo) *ImageUseCase {
 }
 
 func (u *ImageUseCase) SaveImage(image entity.Image) error {
+	id := uuid.New().String()
+	image.ID = id
+
+	err := u.image.SaveImage(image)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (u *ImageUseCase) GetImages() error {
-	return nil
+func (u *ImageUseCase) GetImages() (images []string, err error) {
+	return
 }
