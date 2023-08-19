@@ -1,4 +1,4 @@
-package http1
+package user
 
 import (
 	"encoding/json"
@@ -28,11 +28,24 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	var user entity.UserRequest
 	err := decoder.Decode(&user)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error decode %s", err)
+		return
 	}
 
-	err = u.u.Login(user)
+	accessToken, err := u.u.Login(user)
 	if err != nil {
-		log.Fatalf("login service error %s", err)
+		w.Write([]byte("login service error"))
+		return
 	}
+
+	marshal, err := json.Marshal(entity.LoginResponse{
+		AccessToken: accessToken,
+	})
+	if err != nil {
+		log.Fatalf("marshal error %s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(marshal)
 }
