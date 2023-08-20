@@ -8,7 +8,7 @@ import (
 )
 
 type userRoutes struct {
-	u usecase.UserService
+	iUserService usecase.UserService
 }
 
 func NewUserRoutes(handler *http.ServeMux, u usecase.UserService) {
@@ -32,7 +32,7 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	accessToken, err := u.u.Login(user)
+	accessToken, err := u.iUserService.Login(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

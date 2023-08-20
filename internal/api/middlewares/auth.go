@@ -7,7 +7,7 @@ import (
 )
 
 type Middleware struct {
-	t usecase.TokenService
+	iTokenService usecase.TokenService
 }
 
 func New(t usecase.TokenService) *Middleware {
@@ -33,7 +33,7 @@ func (m *Middleware) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 
 		// Replace this with your actual token validation logic
-		claims, err := m.t.VerifyAccessToken(token)
+		claims, err := m.iTokenService.VerifyAccessToken(token)
 		if err != nil {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
 			return

@@ -12,7 +12,7 @@ import (
 )
 
 type imageRouter struct {
-	i usecase.ImageRepo
+	iImageRepo usecase.ImageRepo
 }
 
 func NewImageRoutes(handler *http.ServeMux, i usecase.ImageRepo, m *middlewares.Middleware) {
@@ -65,7 +65,7 @@ func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
 		ImageURL:  imageURL,
 	}
 
-	err = i.i.SaveImage(image)
+	err = i.iImageRepo.SaveImage(image)
 	if err != nil {
 		http.Error(w, "Error save file", http.StatusInternalServerError)
 		return
@@ -80,7 +80,7 @@ func (i *imageRouter) getImages(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	images, err := i.i.GetImages()
+	images, err := i.iImageRepo.GetImages()
 	if err != nil {
 		log.Fatalf("login service error %s", err)
 	}
