@@ -1,4 +1,13 @@
-# service
-- 1) run db - make db
-- 2) run migration -dir ./migrations postgres "postgresql://user:password@localhost:5432/service?sslmode=disable" up
-- 3) run server
+## Installation
+
+```bash
+$ git clone git@github.com:thimovez/service.git
+```
+
+## Running Application
+Make sure you have Docker, Docker Compose installed.
+For start express server and setup db paste this command into your terminal:
+
+```bash
+make start
+```
