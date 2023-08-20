@@ -14,6 +14,7 @@ import (
 	"github.com/thimovez/service/pkg/postgres"
 	"log"
 	"net/http"
+	"time"
 )
 
 func Run(cfg *config.Config) {
@@ -26,7 +27,8 @@ func Run(cfg *config.Config) {
 	userRepo := user_repo.New(db)
 	imageRepo := image_repo.New(db)
 
-	tokenCase := token.New()
+	expiration := time.Now().Add(time.Hour * 12)
+	tokenCase := token.New(cfg.TOKEN.Secret, expiration)
 	userCase := user.New(userRepo, tokenCase)
 	imageCase := image.New(imageRepo)
 
