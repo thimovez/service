@@ -5,7 +5,6 @@ import (
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type UseCaseUser struct {
@@ -40,8 +39,7 @@ func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err er
 		return
 	}
 
-	expiration := time.Now().Add(time.Hour * 12)
-	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID, expiration)
+	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
 	if err != nil {
 		return
 	}
