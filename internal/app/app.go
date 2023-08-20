@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	imageAPI "github.com/thimovez/service/internal/api/image"
 	"github.com/thimovez/service/internal/api/middlewares"
@@ -23,6 +24,11 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 	defer db.Close()
+
+	err = goose.Up(db, "./migrations")
+	if err != nil {
+		log.Fatal(fmt.Errorf("migration error: %w", err))
+	}
 
 	userRepo := user_repo.New(db)
 	imageRepo := image_repo.New(db)
