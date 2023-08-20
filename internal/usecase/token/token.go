@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-const secretKey = "secret"
-
 type UseCaseToken struct {
 	secretKey  string
 	expiration time.Time
@@ -17,13 +15,13 @@ func New(s string, e time.Time) *UseCaseToken {
 	return &UseCaseToken{s, e}
 }
 
-func (t *UseCaseToken) GenerateAccessToken(userID string, expiration time.Time) (accessToken string, err error) {
+func (t *UseCaseToken) GenerateAccessToken(userID string) (accessToken string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID": userID,
-		"exp":    expiration.Unix(),
+		"exp":    t.expiration.Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(secretKey))
+	tokenString, err := token.SignedString([]byte(t.secretKey))
 	if err != nil {
 		return
 	}
@@ -39,7 +37,7 @@ func (t *UseCaseToken) VerifyAccessToken(tokenString string) (jwt.MapClaims, err
 		}
 
 		// Return the secret key used for signing
-		return []byte(secretKey), nil
+		return []byte(t.secretKey), nil
 	})
 
 	if err != nil {
