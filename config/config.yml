@@ -3,3 +3,6 @@ http:
 
 postgres:
   pg_url: "postgresql://user:password@localhost:5432/service?sslmode=disable"
+
+token:
+  secret: "secret"

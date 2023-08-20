@@ -9,8 +9,9 @@ import (
 type (
 	// Config -.
 	Config struct {
-		HTTP `yaml:"http"`
-		PG   `yaml:"postgres"`
+		HTTP  `yaml:"http"`
+		PG    `yaml:"postgres"`
+		TOKEN `yaml:"token"`
 	}
 
 	// HTTP -.
@@ -21,6 +22,11 @@ type (
 	// PG -.
 	PG struct {
 		URL string `env-required:"true" yaml:"pg_url"  env:"PG_URL"`
+	}
+
+	// TOKEN -.
+	TOKEN struct {
+		Secret string `yaml:"secret"`
 	}
 )
 
