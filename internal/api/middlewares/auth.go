@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"github.com/thimovez/service/internal/usecase"
 	"net/http"
 	"strings"
+
+	"github.com/thimovez/service/internal/usecase"
 )
 
 type Middleware struct {
@@ -32,7 +33,6 @@ func (m *Middleware) AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		// Extract the token from the header
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Replace this with your actual token validation logic
 		claims, err := m.iTokenService.VerifyAccessToken(token)
 		if err != nil {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
