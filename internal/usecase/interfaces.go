@@ -3,7 +3,6 @@ package usecase
 import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/thimovez/service/internal/entity"
-	"time"
 )
 
 type (
@@ -12,7 +11,7 @@ type (
 	}
 
 	TokenService interface {
-		GenerateAccessToken(userID string, expiration time.Time) (string, error)
+		GenerateAccessToken(userID string) (string, error)
 		VerifyAccessToken(tokenString string) (jwt.MapClaims, error)
 	}
 
