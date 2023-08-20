@@ -5,6 +5,7 @@ import (
 	"github.com/thimovez/service/internal/api/middlewares"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -44,7 +45,7 @@ func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
 	defer file.Close()
 
 	// Save the uploaded file to a directory (you can change the path as needed)
-	uploadDir := "../uploads"
+	uploadDir := "./static/images"
 	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 		os.Mkdir(uploadDir, 0755)
 	}
@@ -58,6 +59,13 @@ func (i *imageRouter) uploadPicture(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	defer out.Close()
+
+	// Copy the uploaded file to the created file on the filesystem
+	if _, err := io.Copy(out, file); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	image := entity.Image{
 		ID:        "",
 		UserID:    userID,
