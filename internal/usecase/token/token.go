@@ -8,10 +8,13 @@ import (
 
 const secretKey = "secret"
 
-type UseCaseToken struct{}
+type UseCaseToken struct {
+	secretKey  string
+	expiration time.Time
+}
 
-func New() *UseCaseToken {
-	return &UseCaseToken{}
+func New(s string, e time.Time) *UseCaseToken {
+	return &UseCaseToken{s, e}
 }
 
 func (t *UseCaseToken) GenerateAccessToken(userID string, expiration time.Time) (accessToken string, err error) {
