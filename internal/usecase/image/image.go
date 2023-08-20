@@ -6,21 +6,21 @@ import (
 	"github.com/thimovez/service/internal/usecase"
 )
 
-type ImageUseCase struct {
-	image usecase.ImageRepo
+type UseCaseImage struct {
+	iImageRepo usecase.ImageRepo
 }
 
-func New(i usecase.ImageRepo) *ImageUseCase {
-	return &ImageUseCase{
-		image: i,
+func New(i usecase.ImageRepo) *UseCaseImage {
+	return &UseCaseImage{
+		iImageRepo: i,
 	}
 }
 
-func (u *ImageUseCase) SaveImage(image entity.Image) error {
+func (u *UseCaseImage) SaveImage(image entity.Image) error {
 	id := uuid.New().String()
 	image.ID = id
 
-	err := u.image.SaveImage(image)
+	err := u.iImageRepo.SaveImage(image)
 	if err != nil {
 		return err
 	}
@@ -28,8 +28,8 @@ func (u *ImageUseCase) SaveImage(image entity.Image) error {
 	return nil
 }
 
-func (u *ImageUseCase) GetImages() (images []entity.Image, err error) {
-	images, err = u.image.GetImages()
+func (u *UseCaseImage) GetImages() (images []entity.Image, err error) {
+	images, err = u.iImageRepo.GetImages()
 	if err != nil {
 		return
 	}

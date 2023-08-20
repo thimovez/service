@@ -8,13 +8,13 @@ import (
 
 const secretKey = "secret"
 
-type TokenUseCase struct{}
+type UseCaseToken struct{}
 
-func New() *TokenUseCase {
-	return &TokenUseCase{}
+func New() *UseCaseToken {
+	return &UseCaseToken{}
 }
 
-func (u *TokenUseCase) GenerateAccessToken(userID string, expiration time.Time) (accessToken string, err error) {
+func (t *UseCaseToken) GenerateAccessToken(userID string, expiration time.Time) (accessToken string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID": userID,
 		"exp":    expiration.Unix(),
@@ -28,7 +28,7 @@ func (u *TokenUseCase) GenerateAccessToken(userID string, expiration time.Time) 
 	return tokenString, nil
 }
 
-func (u *TokenUseCase) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
+func (t *UseCaseToken) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Make sure to validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

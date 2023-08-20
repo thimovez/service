@@ -8,20 +8,20 @@ import (
 	"time"
 )
 
-type UserUseCase struct {
-	repo  usecase.UserRepo
-	token usecase.TokenService
+type UseCaseUser struct {
+	iUserRepo     usecase.UserRepo
+	iTokenService usecase.TokenService
 }
 
-func New(r usecase.UserRepo, t usecase.TokenService) *UserUseCase {
-	return &UserUseCase{
-		repo:  r,
-		token: t,
+func New(u usecase.UserRepo, t usecase.TokenService) *UseCaseUser {
+	return &UseCaseUser{
+		iUserRepo:     u,
+		iTokenService: t,
 	}
 }
 
-func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err error) {
-	err = u.repo.CheckUsername(user.Username)
+func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err error) {
+	err = u.iUserRepo.CheckUsername(user.Username)
 	if err != nil {
 		return
 	}
@@ -35,13 +35,13 @@ func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err er
 	id := uuid.New()
 	user.ID = id.String()
 
-	err = u.repo.SaveUser(user)
+	err = u.iUserRepo.SaveUser(user)
 	if err != nil {
 		return
 	}
 
 	expiration := time.Now().Add(time.Hour * 12)
-	accessToken, err = u.token.GenerateAccessToken(user.ID, expiration)
+	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID, expiration)
 	if err != nil {
 		return
 	}
