@@ -11,7 +11,7 @@ This script throw error but its happened becouse initialization db not ready
 ```bash
 make start
 ```
-
+then
 ```bash
 docker compose up service
 ```
