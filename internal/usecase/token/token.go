@@ -1,53 +1,31 @@
 package token
 
 import (
-	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"time"
+	"github.com/thimovez/service/internal/providers/auth"
 )
 
-type UseCaseToken struct {
-	secretKey  string
-	expiration time.Time
+type UseCaseAuth struct {
+	jwtProvider auth.JWTProvider
 }
 
-func New(s string, e time.Time) *UseCaseToken {
-	return &UseCaseToken{s, e}
+func New(jwtProvider auth.JWTProvider) *UseCaseAuth {
+	return &UseCaseAuth{jwtProvider: jwtProvider}
 }
 
-func (t *UseCaseToken) GenerateAccessToken(userID string) (accessToken string, err error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": userID,
-		"exp":    t.expiration.Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(t.secretKey))
+func (t *UseCaseAuth) GenerateAccessToken(userID string) (accessToken string, err error) {
+	token, err := t.jwtProvider.CreateToken(userID)
 	if err != nil {
-		return
+		return "", err
 	}
 
-	return tokenString, nil
+	return token, nil
 }
 
-func (t *UseCaseToken) VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Make sure to validate the signing method
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// Return the secret key used for signing
-		return []byte(t.secretKey), nil
-	})
-
+func (t *UseCaseAuth) VerifyAccessToken(tokenString string) (map[string]interface{}, error) {
+	claims, err := t.jwtProvider.VerifyToken(tokenString)
 	if err != nil {
-		return nil, err
+		return claims, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	return claims, nil
+	return claims, err
 }

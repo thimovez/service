@@ -1,23 +1,25 @@
 package image
 
 import (
-	"github.com/google/uuid"
 	"github.com/thimovez/service/internal/entity"
+	"github.com/thimovez/service/internal/providers/helpers"
 	"github.com/thimovez/service/internal/usecase"
 )
 
 type UseCaseImage struct {
-	iImageRepo usecase.ImageRepo
+	iImageRepo      usecase.ImageRepo
+	iHelperProvider helpers.HelperProvider
 }
 
-func New(i usecase.ImageRepo) *UseCaseImage {
+func New(i usecase.ImageRepo, hp helpers.HelperProvider) *UseCaseImage {
 	return &UseCaseImage{
-		iImageRepo: i,
+		iImageRepo:      i,
+		iHelperProvider: hp,
 	}
 }
 
 func (u *UseCaseImage) SaveImage(image entity.Image) error {
-	id := uuid.New().String()
+	id := u.iHelperProvider.CreateStringUUID()
 	image.ID = id
 
 	err := u.iImageRepo.SaveImage(image)

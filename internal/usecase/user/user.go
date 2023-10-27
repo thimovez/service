@@ -1,21 +1,22 @@
 package user
 
 import (
-	"github.com/google/uuid"
 	"github.com/thimovez/service/internal/entity"
+	"github.com/thimovez/service/internal/providers/helpers"
 	"github.com/thimovez/service/internal/usecase"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UseCaseUser struct {
-	iUserRepo     usecase.UserRepo
-	iTokenService usecase.TokenService
+	iUserRepo       usecase.UserRepo
+	iTokenService   usecase.TokenService
+	iHelperProvider helpers.HelperProvider
 }
 
-func New(u usecase.UserRepo, t usecase.TokenService) *UseCaseUser {
+func New(u usecase.UserRepo, t usecase.TokenService, hp helpers.HelperProvider) *UseCaseUser {
 	return &UseCaseUser{
-		iUserRepo:     u,
-		iTokenService: t,
+		iUserRepo:       u,
+		iTokenService:   t,
+		iHelperProvider: hp,
 	}
 }
 
@@ -25,14 +26,15 @@ func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err er
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := u.iHelperProvider.HashPassword(user.Password)
 	if err != nil {
 		return
 	}
+
 	user.Password = string(hashedPassword)
 
-	id := uuid.New()
-	user.ID = id.String()
+	id := u.iHelperProvider.CreateStringUUID()
+	user.ID = id
 
 	err = u.iUserRepo.SaveUser(user)
 	if err != nil {

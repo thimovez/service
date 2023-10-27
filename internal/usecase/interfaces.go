@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/thimovez/service/internal/entity"
 )
 
@@ -12,7 +11,7 @@ type (
 
 	TokenService interface {
 		GenerateAccessToken(userID string) (string, error)
-		VerifyAccessToken(tokenString string) (jwt.MapClaims, error)
+		VerifyAccessToken(tokenString string) (map[string]interface{}, error)
 	}
 
 	UserRepo interface {
