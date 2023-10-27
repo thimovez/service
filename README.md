@@ -15,3 +15,9 @@ make start
 ```bash
 docker compose up service
 ```
+
+| Method   | URL Pattern     | Action                       | Command                                              |
+|:---------|:----------------|:-----------------------------|:-----------------------------------------------------|
+| POST     | /snippet/view   | Display a specific snippet   | curl -i -X POST http://localhost:4000/snippet/create |
+| POST     | /snippet/create | Display a specific snippet   | curl -i -X POST http://localhost:4000/snippet/create |
+| POST     | /snippet/create | Create a new snippet         | curl -i -X POST http://localhost:4000/snippet/create |
