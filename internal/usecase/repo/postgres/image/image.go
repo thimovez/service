@@ -1,4 +1,4 @@
-package image_repo
+package image
 
 import (
 	"database/sql"

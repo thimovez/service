@@ -10,8 +10,8 @@ import (
 	"github.com/thimovez/service/internal/providers/auth"
 	"github.com/thimovez/service/internal/providers/helpers"
 	"github.com/thimovez/service/internal/usecase/image"
-	"github.com/thimovez/service/internal/usecase/repo/image-repo"
-	"github.com/thimovez/service/internal/usecase/repo/user-repo"
+	imageRepo "github.com/thimovez/service/internal/usecase/repo/postgres/image"
+	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
 	"github.com/thimovez/service/internal/usecase/user"
 	"github.com/thimovez/service/pkg/postgres"
@@ -34,8 +34,8 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
-	userRepo := user_repo.New(db)
-	imageRepo := image_repo.New(db)
+	userRepoPG := userRepo.New(db)
+	imageRepoPG := imageRepo.New(db)
 
 	expiration := time.Now().Add(time.Hour * tokenTime)
 	jwtProvider, err := auth.NewJWTProvider(cfg.TOKEN.Secret, expiration)
@@ -46,8 +46,8 @@ func Run(cfg *config.Config) {
 	helperProvider := helpers.NewHelperProvider()
 
 	tokenUseCase := token.New(jwtProvider)
-	userUseCase := user.New(userRepo, tokenUseCase, helperProvider)
-	imageUseCase := image.New(imageRepo, helperProvider)
+	userUseCase := user.New(userRepoPG, tokenUseCase, helperProvider)
+	imageUseCase := image.New(imageRepoPG, helperProvider)
 
 	mux := http.NewServeMux()
 	m := middlewares.New(tokenUseCase)
