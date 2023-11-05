@@ -38,7 +38,8 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	marshal, err := json.Marshal(entity.LoginResponse{
+	// encode login response to JSON format
+	token, err := json.Marshal(entity.LoginResponse{
 		AccessToken: accessToken,
 	})
 	if err != nil {
@@ -47,5 +48,5 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(marshal)
+	w.Write(token)
 }
