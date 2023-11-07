@@ -7,6 +7,7 @@ import (
 type (
 	UserService interface {
 		Login(user entity.UserRequest) (accessToken string, err error)
+		Registration(user entity.UserRequest) (err error)
 	}
 
 	TokenService interface {
@@ -17,6 +18,7 @@ type (
 	UserRepo interface {
 		SaveUser(user entity.UserRequest) error
 		CheckUsername(username string) error
+		ComparePassword(username string, password string) error
 	}
 
 	ImageRepo interface {

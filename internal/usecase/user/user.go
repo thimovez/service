@@ -21,6 +21,20 @@ func New(u usecase.UserRepo, t usecase.TokenService, hp helpers.HelperProvider) 
 }
 
 func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err error) {
+	err = u.iUserRepo.ComparePassword(user.Username, user.Password)
+	if err != nil {
+		return
+	}
+
+	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
+	if err != nil {
+		return
+	}
+
+	return accessToken, nil
+}
+
+func (u *UseCaseUser) Registration(user entity.UserRequest) (err error) {
 	err = u.iUserRepo.CheckUsername(user.Username)
 	if err != nil {
 		return
@@ -41,10 +55,5 @@ func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err er
 		return
 	}
 
-	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
-	if err != nil {
-		return
-	}
-
-	return accessToken, nil
+	return nil
 }
