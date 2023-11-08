@@ -16,6 +16,7 @@ func New(db *sql.DB) *UserRepo {
 	return &UserRepo{db}
 }
 
+// SaveUser - save user in database and return nil if success.
 func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	q := `INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)`
 
