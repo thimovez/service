@@ -6,6 +6,7 @@ import (
 	"github.com/thimovez/service/internal/usecase"
 )
 
+// UseCaseUser - prefix i means that this is an interface
 type UseCaseUser struct {
 	iUserRepo       usecase.UserRepo
 	iTokenService   usecase.TokenService
