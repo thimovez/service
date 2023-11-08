@@ -18,6 +18,10 @@ func NewUserRoutes(handler *http.ServeMux, u usecase.UserService) {
 	handler.HandleFunc("/registration", r.registration)
 }
 
+type LoginResponse struct {
+	AccessToken string
+}
+
 func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodPost {
@@ -40,7 +44,7 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode login response to JSON format
-	token, err := json.Marshal(entity.LoginResponse{
+	token, err := json.Marshal(LoginResponse{
 		AccessToken: accessToken,
 	})
 	if err != nil {
