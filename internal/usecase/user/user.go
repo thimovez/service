@@ -2,7 +2,8 @@ package user
 
 import (
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/providers/helpers"
+	"github.com/thimovez/service/internal/providers/bcrypt"
+	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase"
 )
 
@@ -10,14 +11,17 @@ import (
 type UseCaseUser struct {
 	iUserRepo       usecase.UserRepo
 	iTokenService   usecase.TokenService
-	iHelperProvider helpers.HelperProvider
+	iBcryptProvider bcrypt.BcryptProvider
+	iUUIDProvider   uuid.UUIDProvider
 }
 
-func New(u usecase.UserRepo, t usecase.TokenService, hp helpers.HelperProvider) *UseCaseUser {
+// TODO сделать передачу лишних агрументов как опции
+func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UseCaseUser {
 	return &UseCaseUser{
 		iUserRepo:       u,
 		iTokenService:   t,
-		iHelperProvider: hp,
+		iBcryptProvider: bp,
+		iUUIDProvider:   up,
 	}
 }
 
@@ -41,14 +45,14 @@ func (u *UseCaseUser) Registration(user entity.UserRequest) (err error) {
 		return
 	}
 
-	hashedPassword, err := u.iHelperProvider.HashPassword(user.Password)
+	hashedPassword, err := u.iBcryptProvider.HashPassword(user.Password)
 	if err != nil {
 		return
 	}
 
 	user.Password = string(hashedPassword)
 
-	id := u.iHelperProvider.CreateStringUUID()
+	id := u.iUUIDProvider.CreateStringUUID()
 	user.ID = id
 
 	err = u.iUserRepo.SaveUser(user)

@@ -8,7 +8,8 @@ import (
 	"github.com/thimovez/service/internal/api/middlewares"
 	userAPI "github.com/thimovez/service/internal/api/user"
 	"github.com/thimovez/service/internal/providers/auth"
-	"github.com/thimovez/service/internal/providers/helpers"
+	"github.com/thimovez/service/internal/providers/bcrypt"
+	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase/image"
 	imageRepo "github.com/thimovez/service/internal/usecase/repo/postgres/image"
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
@@ -43,11 +44,12 @@ func Run(cfg *config.Config) {
 		fmt.Printf("Error initializing JWT provider: %v\n", err)
 		return
 	}
-	helperProvider := helpers.NewHelperProvider()
+	UUIDProvider := uuid.NewUUIDProvider()
+	bcryptProvider := bcrypt.NewBcryptProvider()
 
 	tokenUseCase := token.New(jwtProvider)
-	userUseCase := user.New(userRepoPG, tokenUseCase, helperProvider)
-	imageUseCase := image.New(imageRepoPG, helperProvider)
+	userUseCase := user.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)
+	imageUseCase := image.New(imageRepoPG, UUIDProvider)
 
 	mux := http.NewServeMux()
 	m := middlewares.New(tokenUseCase)
