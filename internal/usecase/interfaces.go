@@ -4,6 +4,7 @@ import (
 	"github.com/thimovez/service/internal/entity"
 )
 
+// TODO remove type interface from file inteface. And delete them
 type (
 	UserService interface {
 		Login(user entity.UserRequest) (accessToken string, err error)
@@ -18,7 +19,7 @@ type (
 	UserRepo interface {
 		SaveUser(user entity.UserRequest) error
 		CheckUsername(username string) error
-		ComparePassword(username string, password string) error
+		GetPassword(username string) (hashedPassword string, err error)
 	}
 
 	ImageRepo interface {

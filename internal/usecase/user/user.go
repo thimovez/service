@@ -26,11 +26,15 @@ func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bc
 }
 
 func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err error) {
-	err = u.iUserRepo.ComparePassword(user.Username, user.Password)
+	hashedPassword, err := u.iUserRepo.GetPassword(user.Username)
 	if err != nil {
 		return
 	}
 
+	err = u.iBcryptProvider.ComparePassword([]byte(hashedPassword), []byte(user.Password))
+	if err != nil {
+		return
+	}
 	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
 	if err != nil {
 		return
