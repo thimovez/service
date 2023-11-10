@@ -35,6 +35,7 @@ func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err er
 	if err != nil {
 		return
 	}
+
 	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
 	if err != nil {
 		return
