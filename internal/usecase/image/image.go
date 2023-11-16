@@ -3,15 +3,15 @@ package image
 import (
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/providers/uuid"
-	"github.com/thimovez/service/internal/usecase"
+	"github.com/thimovez/service/internal/usecase/repo/postgres/image"
 )
 
 type UseCaseImage struct {
-	iImageRepo    usecase.ImageRepo
+	iImageRepo    image.ImageRepository
 	iUUIDProvider uuid.UUIDProvider
 }
 
-func New(i usecase.ImageRepo, up uuid.UUIDProvider) *UseCaseImage {
+func New(i image.ImageRepository, up uuid.UUIDProvider) *UseCaseImage {
 	return &UseCaseImage{
 		iImageRepo:    i,
 		iUUIDProvider: up,

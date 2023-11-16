@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/thimovez/service/internal/api/middlewares"
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/usecase"
+	"github.com/thimovez/service/internal/usecase/repo/postgres/image"
 	"io"
 	"log"
 	"net/http"
@@ -13,10 +13,10 @@ import (
 )
 
 type imageRouter struct {
-	iImageRepo usecase.ImageRepo
+	iImageRepo image.ImageRepository
 }
 
-func NewImageRoutes(handler *http.ServeMux, i usecase.ImageRepo, m *middlewares.Middleware) {
+func NewImageRoutes(handler *http.ServeMux, i image.ImageRepository, m *middlewares.Middleware) {
 	r := &imageRouter{i}
 
 	handler.HandleFunc("/upload-picture", m.AuthMiddleware(r.uploadPicture))

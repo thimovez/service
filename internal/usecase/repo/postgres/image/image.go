@@ -6,6 +6,11 @@ import (
 	"log"
 )
 
+type ImageRepository interface {
+	SaveImage(image entity.Image) error
+	GetImages() (images []entity.Image, err error)
+}
+
 type ImageRepo struct {
 	db *sql.DB
 }
