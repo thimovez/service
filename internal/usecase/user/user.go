@@ -5,6 +5,7 @@ import (
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase"
+	"github.com/thimovez/service/internal/usecase/token"
 )
 
 type UserService interface {
@@ -15,13 +16,13 @@ type UserService interface {
 // UseCaseUser - prefix i means that this is an interface
 type UserUseCase struct {
 	iUserRepo       usecase.UserRepo
-	iTokenService   usecase.TokenService
+	iTokenService   token.TokenService
 	iBcryptProvider bcrypt.BcryptProvider
 	iUUIDProvider   uuid.UUIDProvider
 }
 
 // TODO сделать передачу лишних агрументов как опции
-func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UserUseCase {
+func New(u usecase.UserRepo, t token.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UserUseCase {
 	return &UserUseCase{
 		iUserRepo:       u,
 		iTokenService:   t,

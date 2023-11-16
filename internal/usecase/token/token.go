@@ -4,15 +4,20 @@ import (
 	"github.com/thimovez/service/internal/providers/auth"
 )
 
-type UseCaseAuth struct {
+type TokenService interface {
+	GenerateAccessToken(userID string) (string, error)
+	VerifyAccessToken(tokenString string) (map[string]interface{}, error)
+}
+
+type TokenUseCase struct {
 	jwtProvider auth.JWTProvider
 }
 
-func New(jwtProvider auth.JWTProvider) *UseCaseAuth {
-	return &UseCaseAuth{jwtProvider: jwtProvider}
+func New(jwtProvider auth.JWTProvider) *TokenUseCase {
+	return &TokenUseCase{jwtProvider: jwtProvider}
 }
 
-func (t *UseCaseAuth) GenerateAccessToken(userID string) (accessToken string, err error) {
+func (t *TokenUseCase) GenerateAccessToken(userID string) (accessToken string, err error) {
 	token, err := t.jwtProvider.CreateToken(userID)
 	if err != nil {
 		return "", err
@@ -21,7 +26,7 @@ func (t *UseCaseAuth) GenerateAccessToken(userID string) (accessToken string, er
 	return token, nil
 }
 
-func (t *UseCaseAuth) VerifyAccessToken(tokenString string) (map[string]interface{}, error) {
+func (t *TokenUseCase) VerifyAccessToken(tokenString string) (map[string]interface{}, error) {
 	claims, err := t.jwtProvider.VerifyToken(tokenString)
 	if err != nil {
 		return claims, err
