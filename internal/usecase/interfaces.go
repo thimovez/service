@@ -6,12 +6,6 @@ import (
 
 // TODO remove type interface from file inteface. And delete them
 type (
-	UserRepo interface {
-		SaveUser(user entity.UserRequest) error
-		CheckUsername(username string) error
-		GetPassword(username string) (hashedPassword string, err error)
-	}
-
 	ImageRepo interface {
 		SaveImage(image entity.Image) error
 		GetImages() (images []entity.Image, err error)

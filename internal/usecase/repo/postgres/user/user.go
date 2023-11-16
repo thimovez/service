@@ -7,6 +7,12 @@ import (
 	"log"
 )
 
+type UserRepository interface {
+	SaveUser(user entity.UserRequest) error
+	CheckUsername(username string) error
+	GetPassword(username string) (hashedPassword string, err error)
+}
+
 type UserRepo struct {
 	db *sql.DB
 }
