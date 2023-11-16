@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/thimovez/service/internal/usecase"
+	"github.com/thimovez/service/internal/usecase/token"
 )
 
 type Middleware struct {
-	iTokenService usecase.TokenService
+	iTokenService token.TokenService
 }
 
-func New(t usecase.TokenService) *Middleware {
+func New(t token.TokenService) *Middleware {
 	return &Middleware{t}
 }
 
