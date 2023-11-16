@@ -6,11 +6,6 @@ import (
 
 // TODO remove type interface from file inteface. And delete them
 type (
-	UserService interface {
-		Login(user entity.UserRequest) (accessToken string, err error)
-		Registration(user entity.UserRequest) (err error)
-	}
-
 	TokenService interface {
 		GenerateAccessToken(userID string) (string, error)
 		VerifyAccessToken(tokenString string) (map[string]interface{}, error)

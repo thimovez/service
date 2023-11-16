@@ -3,15 +3,15 @@ package user
 import (
 	"encoding/json"
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/usecase"
+	"github.com/thimovez/service/internal/usecase/user"
 	"net/http"
 )
 
 type userRoutes struct {
-	iUserService usecase.UserService
+	iUserService user.UserService
 }
 
-func NewUserRoutes(handler *http.ServeMux, u usecase.UserService) {
+func NewUserRoutes(handler *http.ServeMux, u user.UserService) {
 	r := &userRoutes{u}
 
 	handler.HandleFunc("/login", r.login)

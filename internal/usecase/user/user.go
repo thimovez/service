@@ -7,8 +7,13 @@ import (
 	"github.com/thimovez/service/internal/usecase"
 )
 
+type UserService interface {
+	Login(user entity.UserRequest) (accessToken string, err error)
+	Registration(user entity.UserRequest) (err error)
+}
+
 // UseCaseUser - prefix i means that this is an interface
-type UseCaseUser struct {
+type UserUseCase struct {
 	iUserRepo       usecase.UserRepo
 	iTokenService   usecase.TokenService
 	iBcryptProvider bcrypt.BcryptProvider
@@ -16,8 +21,8 @@ type UseCaseUser struct {
 }
 
 // TODO сделать передачу лишних агрументов как опции
-func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UseCaseUser {
-	return &UseCaseUser{
+func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UserUseCase {
+	return &UserUseCase{
 		iUserRepo:       u,
 		iTokenService:   t,
 		iBcryptProvider: bp,
@@ -25,7 +30,7 @@ func New(u usecase.UserRepo, t usecase.TokenService, up uuid.UUIDProvider, bp bc
 	}
 }
 
-func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err error) {
+func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(user.Username)
 	if err != nil {
 		return
@@ -44,7 +49,7 @@ func (u *UseCaseUser) Login(user entity.UserRequest) (accessToken string, err er
 	return accessToken, nil
 }
 
-func (u *UseCaseUser) Registration(user entity.UserRequest) (err error) {
+func (u *UserUseCase) Registration(user entity.UserRequest) (err error) {
 	err = u.iUserRepo.CheckUsername(user.Username)
 	if err != nil {
 		return
