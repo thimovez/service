@@ -1,4 +1,4 @@
-package user
+package authorization
 
 import (
 	"github.com/thimovez/service/internal/entity"
@@ -8,13 +8,13 @@ import (
 	"github.com/thimovez/service/internal/usecase/token"
 )
 
-type UserService interface {
+type AuthUserService interface {
 	Login(user entity.UserRequest) (accessToken string, err error)
 	Registration(user entity.UserRequest) (err error)
 }
 
 // UseCaseUser - prefix i means that this is an interface
-type UserUseCase struct {
+type AuthUserUseCase struct {
 	iUserRepo       user.UserRepository
 	iTokenService   token.TokenService
 	iBcryptProvider bcrypt.BcryptProvider
@@ -22,8 +22,8 @@ type UserUseCase struct {
 }
 
 // TODO сделать передачу лишних агрументов как опции
-func New(u user.UserRepository, t token.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *UserUseCase {
-	return &UserUseCase{
+func New(u user.UserRepository, t token.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *AuthUserUseCase {
+	return &AuthUserUseCase{
 		iUserRepo:       u,
 		iTokenService:   t,
 		iBcryptProvider: bp,
@@ -31,7 +31,7 @@ func New(u user.UserRepository, t token.TokenService, up uuid.UUIDProvider, bp b
 	}
 }
 
-func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err error) {
+func (u *AuthUserUseCase) Login(user entity.UserRequest) (accessToken string, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(user.Username)
 	if err != nil {
 		return
@@ -50,7 +50,7 @@ func (u *UserUseCase) Login(user entity.UserRequest) (accessToken string, err er
 	return accessToken, nil
 }
 
-func (u *UserUseCase) Registration(user entity.UserRequest) (err error) {
+func (u *AuthUserUseCase) Registration(user entity.UserRequest) (err error) {
 	err = u.iUserRepo.CheckUsername(user.Username)
 	if err != nil {
 		return

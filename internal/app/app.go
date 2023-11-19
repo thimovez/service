@@ -10,11 +10,11 @@ import (
 	"github.com/thimovez/service/internal/providers/auth"
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
+	"github.com/thimovez/service/internal/usecase/authorization"
 	"github.com/thimovez/service/internal/usecase/image"
 	imageRepo "github.com/thimovez/service/internal/usecase/repo/postgres/image"
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
-	"github.com/thimovez/service/internal/usecase/user"
 	"github.com/thimovez/service/pkg/postgres"
 	"log"
 	"net/http"
@@ -48,7 +48,7 @@ func Run(cfg *config.Config) {
 	bcryptProvider := bcrypt.NewBcryptProvider()
 
 	tokenUseCase := token.New(jwtProvider)
-	userUseCase := user.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)
+	userUseCase := authorization.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)
 	imageUseCase := image.New(imageRepoPG, UUIDProvider)
 
 	mux := http.NewServeMux()
