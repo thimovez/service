@@ -35,14 +35,14 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	return nil
 }
 
-// GetUsername - checks the presence of a user in the database.
-// If user not present in database function return nil.
+// GetUsername - checks the presence of a username row in the database.
+// If username row not present in database function return nil.
 func (u *UserRepo) GetUsername(username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
 	var user sql.NullString
 	// TODO add context
-	err := u.db.QueryRow(q, username).Scan(&user)
+	err := u.db.QueryRowContext(context.TODO(), q, username).Scan(&user)
 	if !user.Valid {
 		if err == sql.ErrNoRows {
 			return nil
