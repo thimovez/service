@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization"
@@ -9,10 +10,14 @@ import (
 
 type userRoutes struct {
 	iUserService authorization.AuthUserService
+	context      context.Context
 }
 
-func NewUserRoutes(handler *http.ServeMux, u authorization.AuthUserService) {
-	r := &userRoutes{u}
+func NewUserRoutes(handler *http.ServeMux, u authorization.AuthUserService, c context.Context) {
+	r := &userRoutes{
+		iUserService: u,
+		context:      c,
+	}
 
 	handler.HandleFunc("/login", r.login)
 	handler.HandleFunc("/registration", r.registration)
@@ -71,7 +76,7 @@ func (u *userRoutes) registration(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = u.iUserService.Registration(user)
+	err = u.iUserService.Registration(user, u.context)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

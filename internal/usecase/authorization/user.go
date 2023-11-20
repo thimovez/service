@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"context"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
@@ -10,7 +11,7 @@ import (
 
 type AuthUserService interface {
 	Login(user entity.UserRequest) (accessToken string, err error)
-	Registration(user entity.UserRequest) (err error)
+	Registration(user entity.UserRequest, c context.Context) (err error)
 }
 
 // UseCaseUser - prefix i means that this is an interface
@@ -21,7 +22,6 @@ type AuthUserUseCase struct {
 	iUUIDProvider   uuid.UUIDProvider
 }
 
-// TODO сделать передачу лишних агрументов как опции
 func New(u user.UserRepository, t token.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *AuthUserUseCase {
 	return &AuthUserUseCase{
 		iUserRepo:       u,
@@ -50,8 +50,8 @@ func (u *AuthUserUseCase) Login(user entity.UserRequest) (accessToken string, er
 	return accessToken, nil
 }
 
-func (u *AuthUserUseCase) Registration(user entity.UserRequest) (err error) {
-	err = u.iUserRepo.GetUsername(user.Username)
+func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Context) (err error) {
+	err = u.iUserRepo.GetUsername(c, user.Username)
 	if err != nil {
 		return
 	}

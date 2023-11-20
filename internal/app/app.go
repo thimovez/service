@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
@@ -35,6 +36,9 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	userRepoPG := userRepo.New(db)
 	imageRepoPG := imageRepo.New(db)
 
@@ -54,7 +58,7 @@ func Run(cfg *config.Config) {
 	mux := http.NewServeMux()
 	m := middlewares.New(tokenUseCase)
 
-	userAPI.NewUserRoutes(mux, userUseCase)
+	userAPI.NewUserRoutes(mux, userUseCase, ctx)
 	imageAPI.NewImageRoutes(mux, imageUseCase, m)
 
 	http.ListenAndServe(cfg.HTTP.Port, mux)
