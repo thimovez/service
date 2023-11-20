@@ -14,7 +14,7 @@ type AuthUserService interface {
 	Registration(user entity.UserRequest, c context.Context) (err error)
 }
 
-// UseCaseUser - prefix i means that this is an interface
+// AuthUserUseCase - prefix i means that this is an interface
 type AuthUserUseCase struct {
 	iUserRepo       user.UserRepository
 	iTokenService   token.TokenService
