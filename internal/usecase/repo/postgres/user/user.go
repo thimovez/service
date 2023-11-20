@@ -9,7 +9,7 @@ import (
 
 type UserRepository interface {
 	SaveUser(user entity.UserRequest) error
-	CheckUsername(username string) error
+	GetUsername(username string) error
 	GetPassword(username string) (hashedPassword string, err error)
 }
 
@@ -35,10 +35,9 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 	return nil
 }
 
-// CheckUsername - checks the presence of a user in the database.
+// GetUsername - checks the presence of a user in the database.
 // If user not present in database function return nil.
-// TODO rename function to get username
-func (u *UserRepo) CheckUsername(username string) error {
+func (u *UserRepo) GetUsername(username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
 	var user sql.NullString

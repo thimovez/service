@@ -51,7 +51,7 @@ func (u *AuthUserUseCase) Login(user entity.UserRequest) (accessToken string, er
 }
 
 func (u *AuthUserUseCase) Registration(user entity.UserRequest) (err error) {
-	err = u.iUserRepo.CheckUsername(user.Username)
+	err = u.iUserRepo.GetUsername(user.Username)
 	if err != nil {
 		return
 	}
