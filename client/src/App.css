@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+
+.authorization-form {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  height: 200px;
+}
+
+.email-input,
+.password-input {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.login-button,
+.registration-button {
+  padding: 10px;
+  margin-top: 10px
+}
