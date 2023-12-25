@@ -17,7 +17,7 @@ const LoginForm: FC = () => {
 
     const handleRegistration = () => {
         if (!email || !password) {
-          setError("all fields must be filled in");
+          setError("All fields must be filled in");
         } else if (!isEmailValid(email)) {
             setError("Enter valid email"); 
         } else if (password.length <= 3) {
@@ -49,7 +49,7 @@ const LoginForm: FC = () => {
                 Sign in
             </button>
             <button className='registration-button' onClick={() => store.registration(email, password)}>
-                Registration
+                Register
             </button>
         </div>
         </div>
