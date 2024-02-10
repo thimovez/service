@@ -8,18 +8,19 @@ const LoginForm: FC = () => {
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState('')
     const {store} = useContext(Context);
-
+    
+     // Basic email validation using a regular expression
     const isEmailValid = (email: string) => {
-        // Basic email validation using a regular expression
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
       };
 
-    const handleRegistration = () => {
+    // Check if user input correct data
+    const validateRegistrationForm = () => {
         if (!email || !password) {
           setError("All fields must be filled in");
         } else if (!isEmailValid(email)) {
-            setError("Enter valid email"); 
+          setError("Enter valid email"); 
         } else if (password.length <= 3) {
           setError("password must be longer than 5 symbol");
         } else {
@@ -44,7 +45,7 @@ const LoginForm: FC = () => {
             />
             {<p className='error-input-form'>{error}</p>}
             <button className='login-button' onClick={() => {
-                handleRegistration()
+                validateRegistrationForm()
                 store.login(email, password)}}>
                 Sign in
             </button>
