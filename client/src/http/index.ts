@@ -3,7 +3,7 @@ import {AuthResponse} from "../models/response/AuthResponse";
 import {store} from "../index";
 import {IUser} from "../models/IUser";
 
-export const API_URL = `http://localhost:8080/`
+export const API_URL = process.env.API_URL  
 
 const $api = axios.create({
     withCredentials: true,
