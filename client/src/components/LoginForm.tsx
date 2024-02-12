@@ -1,13 +1,10 @@
-import React, {FC, useContext, useState} from 'react';
-import {Context} from "../index";
-import {observer} from "mobx-react-lite";
+import React, { useState} from 'react';
 import '../App.css';
 
-const LoginForm: FC = () => {
+const LoginForm = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState('')
-    const {store} = useContext(Context);
     
      // Basic email validation using a regular expression
     const isEmailValid = (email: string) => {
@@ -46,10 +43,10 @@ const LoginForm: FC = () => {
             {<p className='error-input-form'>{error}</p>}
             <button className='login-button' onClick={() => {
                 validateRegistrationForm()
-                store.login(email, password)}}>
+                }}>
                 Sign in
             </button>
-            <button className='registration-button' onClick={() => store.registration(email, password)}>
+            <button className='registration-button' onClick={() => console.log("e")}>
                 Register
             </button>
         </div>
@@ -57,4 +54,4 @@ const LoginForm: FC = () => {
     );
 };
 
-export default observer(LoginForm);
+export default LoginForm;
