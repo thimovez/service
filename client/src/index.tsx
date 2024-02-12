@@ -1,24 +1,12 @@
-import React, {createContext} from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import Store from "./store/store";
-
-interface State {
-    store: Store,
-}
-
-export const store = new Store();
-
-export const Context = createContext<State>({
-    store,
-})
+import { Provider } from 'react-redux';
+import {store} from './redux/store';
 
 ReactDOM.render(
-    <Context.Provider value={{
-        store
-    }}>
+    <Provider store={store}>
         <App />
-    </Context.Provider>,
+    </Provider>,
   document.getElementById('root')
 );
 
