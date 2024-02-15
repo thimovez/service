@@ -1,31 +1,5 @@
-// import {IUser} from "../models/IUser";
-// import {makeAutoObservable} from "mobx";
-// import AuthService from "../services/AuthService";
-// import axios from 'axios';
-// import {AuthResponse} from "../models/response/AuthResponse";
-// import {API_URL} from "../http";
-//
+
 // export default class Store {
-//     user = {} as IUser;
-//     isAuth = false;
-//     isLoading = false;
-
-//     constructor() {
-//         makeAutoObservable(this);
-//     }
-
-//     setAuth(bool: boolean) {
-//         this.isAuth = bool;
-//     }
-
-//     setUser(user: IUser) {
-//         this.user = user;
-//     }
-
-//     setLoading(bool: boolean) {
-//         this.isLoading = bool;
-//     }
-
 //     async login(email: string, password: string) {
 //         try {
 //             const response = await AuthService.login(email, password);
@@ -79,9 +53,10 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
+import authReducer from './slices/authSlice'
 
 export const store = configureStore({
-    reducer: {userReducer}
+    reducer: {userReducer, authReducer}
 });
 
   // Infer the `RootState` and `AppDispatch` types from the store itself
