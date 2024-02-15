@@ -7,7 +7,12 @@ export const counterSlice = createSlice({
         user: null,
         error: null
     },
-    reducers: {}
+    reducers: {
+        setUser: (state, action) => {
+            const { user } = action.payload;
+            state.user = user;
+        },
+    }
 })
 
 export default counterSlice.reducer;
