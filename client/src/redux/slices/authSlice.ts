@@ -1,19 +1,8 @@
-import { Tuple, createSlice } from '@reduxjs/toolkit';
-import { isEmailValid } from '../../helpers/emailValidator';
+import { createSlice } from '@reduxjs/toolkit';
+import { IUser } from '../../models/IUser';
+import { IAuthState } from '../../models/IAuth';
 
-interface IUser {
-    email: string,
-    id: string
-}
-
-interface AuthState {
-    user: IUser
-    token: null
-    isAuth: boolean
-    isLoading: boolean
-}
-
-const initialState: AuthState = {
+const initialState: IAuthState = {
     user: {
         email: '',
         id: ''
@@ -30,10 +19,6 @@ const authSlice = createSlice({
         setLoading: (state, action) => {
             const { setLoading } = action.payload;
             state.isLoading = setLoading;
-        },
-        setUser: (state, action) => {
-            const { user } = action.payload;
-            state.user = user;
         },
         setAuth: (state, action) => {
             const { isAuth } = action.payload;
