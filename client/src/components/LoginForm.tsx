@@ -1,17 +1,12 @@
 import React, { useState} from 'react';
 import '../App.css';
+import { isEmailValid } from '../helpers/emailValidator';
 
 const LoginForm = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState('')
     
-     // Basic email validation using a regular expression
-    const isEmailValid = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-      };
-
     // Check if user input correct data
     const validateRegistrationForm = () => {
         if (!email || !password) {
