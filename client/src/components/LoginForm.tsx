@@ -1,11 +1,20 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import '../App.css';
 import { isEmailValid } from '../helpers/emailValidator';
+import { useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../redux/store';
+import { setUser } from '../redux/slices/userSlice';
+import { logOut, registration } from '../redux/slices/authSlice';
+import {useAppDispatch, useAppSelector} from '../redux/hook';
 
-const LoginForm = () => {
+const LoginForm: React.FC = () => {
+    const id: string = "1";
+    const {isAuth, isLoading, token, user} = useAppSelector((state) => state.authReducer)
+    const dispatch = useAppDispatch();
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState('')
+
     
     // Check if user input correct data
     const validateRegistrationForm = () => {
@@ -21,7 +30,16 @@ const LoginForm = () => {
       };
 
     return (
-        <div className='container'>
+      <div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : isAuth ? (
+          <>
+            <p>Welcome, {user.email}</p>
+            <button onClick={() => dispatch(logOut())}>Logout</button>
+          </>
+        ) : (
+          <div className='container'>
         <div className='authorization-form'>
             <input className='email-input'
                 onChange={e => setEmail(e.target.value)}
@@ -41,11 +59,13 @@ const LoginForm = () => {
                 }}>
                 Sign in
             </button>
-            <button className='registration-button' onClick={() => console.log("e")}>
+            <button className='registration-button' onClick={() => dispatch(registration({email, password}))}>
                 Register
             </button>
         </div>
         </div>
+        )}
+      </div>
     );
 };
 

@@ -1,16 +1,36 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { IUser } from '../../models/IUser';
 import { IAuthState } from '../../models/IAuth';
+import { setUser } from './userSlice';
+import AuthService from '../../services/AuthService';
+
 
 const initialState: IAuthState = {
-    user: {
-        email: '',
-        id: ''
-    },
+    user: {} as IUser,
     token: null,
     isAuth: false,
     isLoading: false
 }
+
+interface RegistrationDataRequest {
+    email: string,
+    password: string
+}
+
+export const registration = createAsyncThunk<IUser, { email: string; password: string }, { rejectValue: string }>(
+    'auth/registration',
+    async (userData: RegistrationDataRequest, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await AuthService.registration(userData.email, userData.password);
+            
+            localStorage.setItem('token', response.data.accessToken);
+            dispatch(setAuth(true))
+            return response.data.user;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message);
+        }
+    }
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -30,13 +50,27 @@ const authSlice = createSlice({
             state.token = accessToken;
             state.isAuth = true
         },
-        logOut: (state, action) => {
+        logOut: (state) => {
             state.user = {} as IUser;
             state.token = null
         }
+    },
+    extraReducers: (builder) => {   
+        builder
+            .addCase(registration.fulfilled, (state, action) => {
+                state.isAuth = true;
+                state.user = action.payload;    
+            })
+            .addCase(registration.pending, (state) => {
+                state.isLoading = true;  
+            })
+            .addCase(registration.rejected, (state) => {
+                state.isLoading = false; 
+            });
+            
     }
   });
 
-export const { setCreadentials, logOut } = authSlice.actions;
+export const { setLoading, setAuth, setCreadentials, logOut } = authSlice.actions;
 
 export default authSlice.reducer;
