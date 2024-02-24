@@ -3,13 +3,14 @@ package user
 import (
 	"context"
 	"database/sql"
-	"github.com/thimovez/service/internal/entity"
 	"log"
 	"time"
+
+	"github.com/thimovez/service/internal/entity"
 )
 
 type UserRepository interface {
-	SaveUser(user entity.UserRequest) error
+	SaveUser(c context.Context, eu entity.UserRequest) error
 	GetUsername(c context.Context, username string) error
 	GetPassword(username string) (hashedPassword string, err error)
 }
@@ -25,10 +26,13 @@ func New(db *sql.DB) *UserRepo {
 }
 
 // SaveUser - save user in database and return nil if success.
-func (u *UserRepo) SaveUser(user entity.UserRequest) error {
+func (u *UserRepo) SaveUser(c context.Context, user entity.UserRequest) error {
 	q := `INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)`
 
-	_, err := u.db.Exec(q, user.ID, user.Username, user.Password)
+	ctx, cancel := context.WithTimeout(c, 30*time.Second)
+	defer cancel()
+
+	_, err := u.db.ExecContext(ctx, q, user.ID, user.Username, user.Password)
 	if err != nil {
 		return err
 	}
@@ -41,7 +45,7 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 func (u *UserRepo) GetUsername(c context.Context, username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
-	ctx, cancel := context.WithTimeout(c, 5*time.Second)
+	ctx, cancel := context.WithTimeout(c, 30*time.Second)
 	defer cancel()
 
 	var user sql.NullString

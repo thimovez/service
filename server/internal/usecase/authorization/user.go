@@ -2,6 +2,7 @@ package authorization
 
 import (
 	"context"
+
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
@@ -66,7 +67,7 @@ func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Contex
 	id := u.iUUIDProvider.CreateStringUUID()
 	user.ID = id
 
-	err = u.iUserRepo.SaveUser(user)
+	err = u.iUserRepo.SaveUser(c, user)
 	if err != nil {
 		return
 	}

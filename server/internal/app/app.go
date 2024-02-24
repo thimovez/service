@@ -3,6 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	imageAPI "github.com/thimovez/service/internal/api/image"
@@ -17,9 +21,6 @@ import (
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
 	"github.com/thimovez/service/pkg/postgres"
-	"log"
-	"net/http"
-	"time"
 )
 
 const tokenTime = 12
