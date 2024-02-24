@@ -1,22 +1,20 @@
-import React, { useEffect, useState} from 'react';
+import React, { useState } from 'react';
+
 import '../App.css';
 import { isEmailValid } from '../helpers/emailValidator';
-import { useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../redux/store';
-import { setUser } from '../redux/slices/userSlice';
-import { logOut, registration } from '../redux/slices/authSlice';
+import { registration } from '../redux/slices/authSlice';
 import {useAppDispatch, useAppSelector} from '../redux/hook';
 
 const LoginForm: React.FC = () => {
-    const id: string = "1";
-    const {isAuth, isLoading, token, user} = useAppSelector((state) => state.authReducer)
-    const dispatch = useAppDispatch();
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [error, setError] = useState('')
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    // TODO change type of generic, and add logic for error
+    const [error1, setError] = useState<string>('');
 
+    const {isAuth, loading, user, error} = useAppSelector((state) => state.auth)
+    const dispatch = useAppDispatch();
     
-    // Check if user input correct data
+    // TODO remove validation logic from this file
     const validateRegistrationForm = () => {
         if (!email || !password) {
           setError("All fields must be filled in");
@@ -31,12 +29,15 @@ const LoginForm: React.FC = () => {
 
     return (
       <div>
-        {isLoading ? (
+        {loading ? (
+          <div>
           <p>Loading...</p>
+          <p>{error}</p>
+          </div>
         ) : isAuth ? (
           <>
             <p>Welcome, {user.email}</p>
-            <button onClick={() => dispatch(logOut())}>Logout</button>
+            {/* <button onClick={() => dispatch(logOut())}>Logout</button> */}
           </>
         ) : (
           <div className='container'>
@@ -53,7 +54,7 @@ const LoginForm: React.FC = () => {
                 type="password"
                 placeholder='Password'
             />
-            {<p className='error-input-form'>{error}</p>}
+            {<p className='error-input-form'>{error1}</p>}
             <button className='login-button' onClick={() => {
                 validateRegistrationForm()
                 }}>
