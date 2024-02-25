@@ -12,7 +12,7 @@ import (
 
 type AuthUserService interface {
 	Login(user entity.UserRequest) (accessToken string, err error)
-	Registration(user entity.UserRequest, c context.Context) (err error)
+	Registration(user entity.UserRequest, c context.Context) (userR entity.UserResponse, err error)
 }
 
 // AuthUserUseCase - prefix i means that this is an interface
@@ -51,7 +51,7 @@ func (u *AuthUserUseCase) Login(user entity.UserRequest) (accessToken string, er
 	return accessToken, nil
 }
 
-func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Context) (err error) {
+func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Context) (userR entity.UserResponse, err error) {
 	err = u.iUserRepo.GetUsername(c, user.Username)
 	if err != nil {
 		return
@@ -72,5 +72,15 @@ func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Contex
 		return
 	}
 
-	return nil
+	_, err = u.iUserRepo.GetUserDataByID(id)
+	if err != nil {
+		userR.Success = false
+		userR.Message = err.Error()
+		return userR, err
+	}
+	// userR.Data = *userData
+	userR.Success = true
+	userR.Message = "User created succesfully"
+
+	return userR, nil
 }
