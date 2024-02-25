@@ -72,13 +72,13 @@ func (u *AuthUserUseCase) Registration(user entity.UserRequest, c context.Contex
 		return
 	}
 
-	_, err = u.iUserRepo.GetUserDataByID(id)
+	userData, err := u.iUserRepo.GetUserDataByID(id)
 	if err != nil {
 		userR.Success = false
 		userR.Message = err.Error()
 		return userR, err
 	}
-	// userR.Data = *userData
+	userR.Data = *userData
 	userR.Success = true
 	userR.Message = "User created succesfully"
 
