@@ -77,17 +77,18 @@ func (u *UserRepo) GetPassword(username string) (hashedPassword string, err erro
 }
 
 func (u *UserRepo) GetUserDataByID(id string) (user *entity.User, err error) {
-	qGetUser := `SELECT (id) FROM users WHERE id = $1`
+	qGetUser := "SELECT id, username FROM users WHERE id=$1"
 	var userData entity.User
 
 	rows, err := u.db.Query(qGetUser, id)
 	if err != nil {
 		return
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(userData.ID, userData.Username)
+		err := rows.Scan(&userData.ID, &userData.Username)
 		if err != nil {
 			return user, err
 		}
