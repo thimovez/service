@@ -62,5 +62,6 @@ func Run(cfg *config.Config) {
 	userAPI.NewUserRoutes(mux, userUseCase, ctx)
 	imageAPI.NewImageRoutes(mux, imageUseCase, m)
 
+	log.Printf("Server started on http://localhost:%v", cfg.HTTP.Port)
 	http.ListenAndServe(cfg.HTTP.Port, mux)
 }
