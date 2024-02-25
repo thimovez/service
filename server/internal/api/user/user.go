@@ -3,9 +3,10 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization"
-	"net/http"
 )
 
 type userRoutes struct {
@@ -64,6 +65,7 @@ func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
 func (u *userRoutes) registration(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("invalid method"))
 		return
 	}
@@ -76,12 +78,24 @@ func (u *userRoutes) registration(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = u.iUserService.Registration(user, u.context)
+	res, err := u.iUserService.Registration(user, u.context)
+	if err != nil {
+		userJson, err := json.Marshal(res)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(userJson)
+		return
+	}
+
+	userJson, err := json.Marshal(res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	w.Write(userJson)
 }
