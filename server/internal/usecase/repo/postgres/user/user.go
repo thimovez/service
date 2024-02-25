@@ -13,6 +13,7 @@ type UserRepository interface {
 	SaveUser(c context.Context, eu entity.UserRequest) error
 	GetUsername(c context.Context, username string) error
 	GetPassword(username string) (hashedPassword string, err error)
+	GetUserDataByID(id string) (user *entity.User, err error)
 }
 
 type UserRepo struct {
@@ -60,9 +61,9 @@ func (u *UserRepo) GetUsername(c context.Context, username string) error {
 }
 
 // GetPassword - return hashed password by username.
-func (u *UserRepo) GetPassword(username string) (hashedPassword string, error error) {
+func (u *UserRepo) GetPassword(username string) (hashedPassword string, err error) {
 	qGetPassword := `SELECT (password_hash) FROM users WHERE username = $1`
-	err := u.db.QueryRowContext(context.TODO(), qGetPassword, username).Scan(&hashedPassword)
+	err = u.db.QueryRowContext(context.TODO(), qGetPassword, username).Scan(&hashedPassword)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("no user with id %d\n", username)
@@ -73,4 +74,24 @@ func (u *UserRepo) GetPassword(username string) (hashedPassword string, error er
 	}
 
 	return hashedPassword, nil
+}
+
+func (u *UserRepo) GetUserDataByID(id string) (user *entity.User, err error) {
+	qGetUser := `SELECT (id) FROM users WHERE id = $1`
+	var userData entity.User
+
+	rows, err := u.db.Query(qGetUser, id)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(userData.ID, userData.Username)
+		if err != nil {
+			return user, err
+		}
+	}
+
+	return &userData, nil
 }
