@@ -18,10 +18,10 @@ func New(db *sql.DB) *CommentRepo {
 	return &CommentRepo{db}
 }
 
-func (cp *CommentRepo) Create(c entity.Comment) error {
-	q := `INSERT INTO comments ( id, userID, content, parentID )
+func (cr *CommentRepo) Create(c entity.Comment) error {
+	q := `INSERT INTO comments ( id, user_id, content, parent_id )
 		  VALUES ($1, $2, $3, $4)`
-	_, err := cp.db.Exec(q, c.ID, c.UserID, c.Content, c.ParentID)
+	_, err := cr.db.Exec(q, c.ID, c.UserID, c.Content, c.ParentID)
 	if err != nil {
 		return err
 	}
