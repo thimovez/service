@@ -2,7 +2,7 @@ http:
   port: ":8080"
 
 postgres:
-  pg_url: "postgresql://user:password@db:5432/service?sslmode=disable"
+  pg_url: "postgresql://user:password@localhost:5432/service?sslmode=disable"
 
 token:
   secret: "secret"
