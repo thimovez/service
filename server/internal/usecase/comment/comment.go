@@ -5,6 +5,10 @@ import (
 	"github.com/thimovez/service/internal/usecase/repo/postgres/comment"
 )
 
+type Comment interface {
+	CreateComment(c entity.Comment) error
+}
+
 type UseCaseComment struct {
 	iImageRepo comment.CommentRepository
 }
@@ -16,7 +20,7 @@ func New(i comment.CommentRepository) *UseCaseComment {
 }
 
 func (u *UseCaseComment) CreateComment(c entity.Comment) error {
-	err := u.iImageRepo.CreateComment(c)
+	err := u.iImageRepo.Create(c)
 	if err != nil {
 		return err
 	}

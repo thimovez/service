@@ -2,7 +2,7 @@ package image
 
 import (
 	"encoding/json"
-	"github.com/thimovez/service/internal/api/middlewares"
+	"github.com/thimovez/service/internal/controller/middlewares"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/repo/postgres/image"
 	"io"
