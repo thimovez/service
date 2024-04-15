@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
+	commentAPI "github.com/thimovez/service/internal/api/comment"
 	imageAPI "github.com/thimovez/service/internal/api/image"
 	"github.com/thimovez/service/internal/api/middlewares"
 	userAPI "github.com/thimovez/service/internal/api/user"
@@ -12,7 +13,9 @@ import (
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase/authorization"
+	"github.com/thimovez/service/internal/usecase/comment"
 	"github.com/thimovez/service/internal/usecase/image"
+	commentRepo "github.com/thimovez/service/internal/usecase/repo/postgres/comment"
 	imageRepo "github.com/thimovez/service/internal/usecase/repo/postgres/image"
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
@@ -41,6 +44,7 @@ func Run(cfg *config.Config) {
 
 	userRepoPG := userRepo.New(db)
 	imageRepoPG := imageRepo.New(db)
+	commentRepoPG := commentRepo.New(db)
 
 	expiration := time.Now().Add(time.Hour * tokenTime)
 	jwtProvider, err := auth.NewJWTProvider(cfg.TOKEN.Secret, expiration)
@@ -54,12 +58,14 @@ func Run(cfg *config.Config) {
 	tokenUseCase := token.New(jwtProvider)
 	userUseCase := authorization.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)
 	imageUseCase := image.New(imageRepoPG, UUIDProvider)
+	commentUseCase := comment.New(commentRepoPG)
 
 	mux := http.NewServeMux()
 	m := middlewares.New(tokenUseCase)
 
 	userAPI.NewUserRoutes(mux, userUseCase, ctx)
 	imageAPI.NewImageRoutes(mux, imageUseCase, m)
+	commentAPI.NewCommentRoutes(mux, commentUseCase)
 
 	http.ListenAndServe(cfg.HTTP.Port, mux)
 }
