@@ -21,7 +21,7 @@ func New(db *sql.DB) *CommentRepo {
 func (cr *CommentRepo) Create(c entity.Comment) error {
 	q := `INSERT INTO comments ( id, user_id, content, parent_id )
 		  VALUES ($1, $2, $3, $4)`
-	_, err := cr.db.Exec(q, c.ID, c.UserID, c.Content, c.ParentID)
+	_, err := cr.db.Exec(q, c.ID, c.User.ID, c.Content, c.Parent.ID)
 	if err != nil {
 		return err
 	}
