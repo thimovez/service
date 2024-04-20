@@ -9,3 +9,9 @@ type UserRequest struct {
 type UserID struct {
 	ID string `json:"id"`
 }
+
+type LoginResponse struct {
+	Tokens struct {
+		AccessToken string `json:"access_token"`
+	} `json:"tokens"`
+}

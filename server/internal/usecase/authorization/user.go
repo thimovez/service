@@ -35,7 +35,7 @@ func New(
 	}
 }
 
-func (u *AuthUserUseCase) VerifyLoginData(user entity.UserRequest) (accessToken string, err error) {
+func (u *AuthUserUseCase) VerifyLoginData(user entity.UserRequest) (res *entity.LoginResponse, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(user.Username)
 	if err != nil {
 		return
@@ -46,12 +46,14 @@ func (u *AuthUserUseCase) VerifyLoginData(user entity.UserRequest) (accessToken 
 		return
 	}
 
-	accessToken, err = u.iTokenService.GenerateAccessToken(user.ID)
+	accessToken, err := u.iTokenService.GenerateAccessToken(user.ID)
 	if err != nil {
 		return
 	}
 
-	return accessToken, nil
+	res.Tokens.AccessToken = accessToken
+
+	return res, nil
 }
 
 func (u *AuthUserUseCase) VerifyRegistrationData(user entity.UserRequest) (err error) {

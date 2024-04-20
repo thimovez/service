@@ -21,16 +21,9 @@ func newAuthorizationRoutes(handler *gin.RouterGroup, a *authorization.AuthUserU
 	}
 }
 
-type LoginResponse struct {
-	Tokens struct {
-		AccessToken string `json:"access_token"`
-	} `json:"tokens"`
-}
-
 func (r *authorizationRoutes) login(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	var user entity.UserRequest
-	var res = LoginResponse{}
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
@@ -38,13 +31,11 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := r.a.VerifyLoginData(user)
+	res, err := r.a.VerifyLoginData(user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	res.Tokens.AccessToken = accessToken
 
 	c.JSON(http.StatusOK, res)
 }
