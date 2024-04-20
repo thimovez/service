@@ -7,6 +7,10 @@ type Comment struct {
 	Parent  ParentComment `json:"parent"`
 }
 
+type ParentComment struct {
+	ID string `json:"id"`
+}
+
 type CreateCommentReq struct {
 	ID      string        `json:"id"`
 	Content string        `json:"content"`
@@ -16,8 +20,4 @@ type CreateCommentReq struct {
 type CreateCommentRes struct {
 	User    UserID  `json:"user"`
 	Comment Comment `json:"comment"`
-}
-
-type ParentComment struct {
-	ID string `json:"id"`
 }
