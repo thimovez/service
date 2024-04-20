@@ -16,7 +16,7 @@ func NewCommentRoutes(handler *http.ServeMux, c *comment.UseCaseComment) {
 		iCommentService: c,
 	}
 
-	handler.HandleFunc("/create-comment", r.createComment)
+	handler.HandleFunc("/comment/create", r.createComment)
 }
 
 func (u *commentRouter) createComment(w http.ResponseWriter, req *http.Request) {
