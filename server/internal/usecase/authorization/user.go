@@ -21,7 +21,12 @@ type AuthUserUseCase struct {
 	iUUIDProvider   uuid.UUIDProvider
 }
 
-func New(u user.UserRepository, t token.TokenService, up uuid.UUIDProvider, bp bcrypt.BcryptProvider) *AuthUserUseCase {
+func New(
+	u user.UserRepository,
+	t token.TokenService,
+	up uuid.UUIDProvider,
+	bp bcrypt.BcryptProvider,
+) *AuthUserUseCase {
 	return &AuthUserUseCase{
 		iUserRepo:       u,
 		iTokenService:   t,
