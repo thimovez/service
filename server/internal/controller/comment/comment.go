@@ -34,7 +34,7 @@ func (u *commentRouter) createComment(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	c.UserID = req.PostForm.Get("userID")
+	//c.UserID = req.PostForm.Get("userID")
 
 	err = u.iCommentService.CreateComment(c)
 	if err != nil {

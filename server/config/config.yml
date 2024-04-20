@@ -6,3 +6,6 @@ postgres:
 
 token:
   secret: "secret"
+
+logger:
+  log_level: 'debug'

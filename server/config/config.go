@@ -12,6 +12,7 @@ type (
 		HTTP  `yaml:"http"`
 		PG    `yaml:"postgres"`
 		TOKEN `yaml:"token"`
+		LOG   `yaml:"logger"`
 	}
 
 	// HTTP -.
@@ -27,6 +28,11 @@ type (
 	// TOKEN -.
 	TOKEN struct {
 		Secret string `yaml:"secret"`
+	}
+
+	// Log -.
+	LOG struct {
+		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
 	}
 )
 
