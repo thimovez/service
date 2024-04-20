@@ -16,7 +16,7 @@ func NewCommentRoutes(handler *http.ServeMux, c *comment.UseCaseComment) {
 		iCommentService: c,
 	}
 
-	handler.HandleFunc("/create-comment", r.createComment)
+	handler.HandleFunc("/comment/create", r.createComment)
 }
 
 func (u *commentRouter) createComment(w http.ResponseWriter, req *http.Request) {
@@ -33,6 +33,8 @@ func (u *commentRouter) createComment(w http.ResponseWriter, req *http.Request) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	c.UserID = req.PostForm.Get("userID")
 
 	err = u.iCommentService.CreateComment(c)
 	if err != nil {

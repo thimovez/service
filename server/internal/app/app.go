@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
-	commentAPI "github.com/thimovez/service/internal/api/comment"
-	imageAPI "github.com/thimovez/service/internal/api/image"
-	"github.com/thimovez/service/internal/api/middlewares"
-	userAPI "github.com/thimovez/service/internal/api/user"
+	commentAPI "github.com/thimovez/service/internal/controller/comment"
+	imageAPI "github.com/thimovez/service/internal/controller/image"
+	"github.com/thimovez/service/internal/controller/middlewares"
+	userAPI "github.com/thimovez/service/internal/controller/user"
 	"github.com/thimovez/service/internal/providers/auth"
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
@@ -34,7 +34,7 @@ func Run(cfg *config.Config) {
 	}
 	defer db.Close()
 
-	err = goose.Up(db, "./migrations")
+	err = goose.Up(db, "../migrations")
 	if err != nil {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}

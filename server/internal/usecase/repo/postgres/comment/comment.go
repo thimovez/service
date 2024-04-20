@@ -6,7 +6,7 @@ import (
 )
 
 type CommentRepository interface {
-	CreateComment(c entity.Comment) error
+	Create(c entity.Comment) error
 	//GetCommentID(c entity.Comment) uint64
 }
 
@@ -18,10 +18,10 @@ func New(db *sql.DB) *CommentRepo {
 	return &CommentRepo{db}
 }
 
-func (u *CommentRepo) CreateComment(c entity.Comment) error {
-	q := `INSERT INTO comments ( id, userID, content, parentID )
+func (cr *CommentRepo) Create(c entity.Comment) error {
+	q := `INSERT INTO comments ( id, user_id, content, parent_id )
 		  VALUES ($1, $2, $3, $4)`
-	_, err := u.db.Exec(q, c.ID, c.UserID, c.Content, c.ParentID)
+	_, err := cr.db.Exec(q, c.ID, c.User.ID, c.Content, c.Parent.ID)
 	if err != nil {
 		return err
 	}
