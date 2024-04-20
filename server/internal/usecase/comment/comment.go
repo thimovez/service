@@ -20,6 +20,18 @@ func New(i comment.CommentRepository) *UseCaseComment {
 }
 
 func (u *UseCaseComment) CreateComment(c entity.Comment) error {
+	// This checks a comment is a main comment or a parent comment.
+	// If parent id is 0 - this mean is main
+	//parendID := getParentIDByID(c.ID)
+
+	//if c.ParentID != 0 {
+	//	c.ParentID++
+	//}
+
+	//if c.ID == "" {
+	//	c.ParentID = 0
+	//}
+
 	err := u.iImageRepo.Create(c)
 	if err != nil {
 		return err
