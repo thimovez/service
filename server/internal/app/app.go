@@ -1,8 +1,8 @@
 package app
 
 import (
-	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	commentAPI "github.com/thimovez/service/internal/controller/comment"
@@ -39,9 +39,6 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
 	userRepoPG := userRepo.New(db)
 	imageRepoPG := imageRepo.New(db)
 	commentRepoPG := commentRepo.New(db)
@@ -60,12 +57,14 @@ func Run(cfg *config.Config) {
 	imageUseCase := image.New(imageRepoPG, UUIDProvider)
 	commentUseCase := comment.New(commentRepoPG)
 
+	handler := gin.New()
 	mux := http.NewServeMux()
 	m := middlewares.New(tokenUseCase)
 
-	userAPI.NewUserRoutes(mux, userUseCase, ctx)
+	userAPI.NewRouter(handler, userUseCase)
 	imageAPI.NewImageRoutes(mux, imageUseCase, m)
 	commentAPI.NewCommentRoutes(mux, commentUseCase)
 
-	http.ListenAndServe(cfg.HTTP.Port, mux)
+	//http.ListenAndServe(cfg.HTTP.Port, mux)
+	handler.Run(":8080")
 }

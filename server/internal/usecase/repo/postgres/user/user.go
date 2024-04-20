@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"github.com/thimovez/service/internal/entity"
 	"log"
-	"time"
 )
 
 type UserRepository interface {
 	SaveUser(user entity.UserRequest) error
-	GetUsername(c context.Context, username string) error
+	GetUsername(username string) error
 	GetPassword(username string) (hashedPassword string, err error)
 }
 
@@ -38,14 +37,11 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 
 // GetUsername - checks the presence of a username row in the database.
 // If username row not present in database function return nil.
-func (u *UserRepo) GetUsername(c context.Context, username string) error {
+func (u *UserRepo) GetUsername(username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
-	ctx, cancel := context.WithTimeout(c, 5*time.Second)
-	defer cancel()
-
 	var user sql.NullString
-	err := u.db.QueryRowContext(ctx, q, username).Scan(&user)
+	err := u.db.QueryRow(q, username).Scan(&user)
 	if !user.Valid {
 		if err == sql.ErrNoRows {
 			return nil

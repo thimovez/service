@@ -1,87 +1,69 @@
 package user
 
 import (
-	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	"net/http"
 )
 
-type userRoutes struct {
-	iUserService authorization.AuthUserService
-	context      context.Context
+type authorizationRoutes struct {
+	a *authorization.AuthUserUseCase
 }
 
-func NewUserRoutes(handler *http.ServeMux, u authorization.AuthUserService, c context.Context) {
-	r := &userRoutes{
-		iUserService: u,
-		context:      c,
-	}
+func newAuthorizationRoutes(handler *gin.RouterGroup, a *authorization.AuthUserUseCase) {
+	r := &authorizationRoutes{a}
 
-	handler.HandleFunc("/login", r.login)
-	handler.HandleFunc("/registration", r.registration)
+	h := handler.Group("/authorization")
+	{
+		h.POST("/login", r.login)
+		h.POST("/registration", r.registration)
+	}
 }
 
 type LoginResponse struct {
-	AccessToken string
+	Tokens struct {
+		AccessToken string `json:"access_token"`
+	} `json:"tokens"`
 }
 
-func (u *userRoutes) login(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if req.Method != http.MethodPost {
-		w.Write([]byte("invalid method"))
-		return
-	}
-
-	decoder := json.NewDecoder(req.Body)
+func (r *authorizationRoutes) login(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "application/json")
 	var user entity.UserRequest
-	err := decoder.Decode(&user)
+	var res = LoginResponse{}
+
+	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	accessToken, err := u.iUserService.Login(user)
+	accessToken, err := r.a.Login(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// encode login response to JSON format
-	token, err := json.Marshal(LoginResponse{
-		AccessToken: accessToken,
-	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	res.Tokens.AccessToken = accessToken
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(token)
+	c.JSON(http.StatusOK, res)
 }
 
-func (u *userRoutes) registration(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if req.Method != http.MethodPost {
-		w.Write([]byte("invalid method"))
-		return
-	}
-
-	decoder := json.NewDecoder(req.Body)
+func (r *authorizationRoutes) registration(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "application/json")
 	var user entity.UserRequest
-	err := decoder.Decode(&user)
+
+	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = u.iUserService.Registration(user, u.context)
+	err = r.a.Registration(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
