@@ -8,10 +8,10 @@ import (
 )
 
 type authorizationRoutes struct {
-	a *authorization.AuthUserUseCase
+	a authorization.AuthUserService
 }
 
-func newAuthorizationRoutes(handler *gin.RouterGroup, a *authorization.AuthUserUseCase) {
+func newAuthorizationRoutes(handler *gin.RouterGroup, a authorization.AuthUserService) {
 	r := &authorizationRoutes{a}
 
 	h := handler.Group("/authorization")

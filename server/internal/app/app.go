@@ -38,10 +38,6 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
-	userRepoPG := userRepo.New(db)
-	//imageRepoPG := imageRepo.New(db)
-	//commentRepoPG := commentRepo.New(db)
-
 	expiration := time.Now().Add(time.Hour * tokenTime)
 	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret, expiration)
 	if err != nil {
@@ -49,11 +45,15 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	UUIDProvider := uuidapi.NewUUIDProvider()
-	bcryptProvider := bcryptapi.NewBcryptProvider()
+	userUseCase := authorization.New(
+		userRepo.New(db),
+		token.New(jwtProvider),
+		uuidapi.NewUUIDProvider(),
+		bcryptapi.NewBcryptProvider(),
+	)
 
-	tokenUseCase := token.New(jwtProvider)
-	userUseCase := authorization.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)
+	//imageRepoPG := imageRepo.New(db)
+	//commentRepoPG := commentRepo.New(db)
 	//imageUseCase := image.New(imageRepoPG, UUIDProvider)
 	//commentUseCase := comment.New(commentRepoPG)
 
@@ -65,6 +65,7 @@ func Run(cfg *config.Config) {
 	//imageAPI.NewImageRoutes(mux, imageUseCase, m)
 	//commentAPI.NewCommentRoutes(mux, commentUseCase)
 
+	gin.SetMode(gin.DebugMode)
 	httpServer := httpserver.New(handler)
 
 	// Waiting signal

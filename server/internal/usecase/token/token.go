@@ -1,11 +1,12 @@
 package token
 
 import (
+	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/token/tokenapi"
 )
 
 type TokenService interface {
-	GenerateAccessToken(userID string) (string, error)
+	GenerateAccessToken(a entity.AuthorizationReq) (string, error)
 	VerifyAccessToken(tokenString string) (map[string]interface{}, error)
 }
 
@@ -17,8 +18,8 @@ func New(jwtProvider tokenapi.JWTProvider) *TokenUseCase {
 	return &TokenUseCase{jwtProvider: jwtProvider}
 }
 
-func (t *TokenUseCase) GenerateAccessToken(userID string) (accessToken string, err error) {
-	token, err := t.jwtProvider.CreateToken(userID)
+func (t *TokenUseCase) GenerateAccessToken(a entity.AuthorizationReq) (accessToken string, err error) {
+	token, err := t.jwtProvider.CreateToken(a)
 	if err != nil {
 		return "", err
 	}

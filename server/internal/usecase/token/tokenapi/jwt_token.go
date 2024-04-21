@@ -3,13 +3,14 @@ package tokenapi
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/thimovez/service/internal/entity"
 	"time"
 )
 
 const minSecretKeySize = 3
 
 type JWTProvider interface {
-	CreateToken(userID string) (string, error)
+	CreateToken(a entity.AuthorizationReq) (string, error)
 	VerifyToken(tokenString string) (map[string]interface{}, error)
 }
 
@@ -29,10 +30,11 @@ func NewJWTProvider(secretKey string, expiration time.Time) (JWTProvider, error)
 	}, nil
 }
 
-func (provider *JWTProviderImpl) CreateToken(userID string) (string, error) {
+func (provider *JWTProviderImpl) CreateToken(a entity.AuthorizationReq) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": userID,
-		"exp":    provider.expiration.Unix(),
+		"userID":   a.User.ID,
+		"username": a.User.Username,
+		"exp":      provider.expiration.Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(provider.secretKey))
