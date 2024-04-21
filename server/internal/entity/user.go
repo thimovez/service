@@ -6,12 +6,11 @@ type UserRequest struct {
 	Password string `json:"password"`
 }
 
-type UserID struct {
-	ID string `json:"id"`
+type UserResponse struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
 }
 
-type LoginResponse struct {
-	Tokens struct {
-		AccessToken string `json:"access_token"`
-	} `json:"tokens"`
+type UserID struct {
+	ID string `json:"id"`
 }
