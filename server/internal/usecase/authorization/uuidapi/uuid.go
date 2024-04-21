@@ -1,4 +1,4 @@
-package uuid
+package uuidapi
 
 import (
 	"github.com/google/uuid"

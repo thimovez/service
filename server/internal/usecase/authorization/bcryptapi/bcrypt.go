@@ -1,4 +1,4 @@
-package bcrypt
+package bcryptapi
 
 import "golang.org/x/crypto/bcrypt"
 

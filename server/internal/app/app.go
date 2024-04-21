@@ -6,9 +6,9 @@ import (
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	userAPI "github.com/thimovez/service/internal/controller/user"
-	"github.com/thimovez/service/internal/providers/bcrypt"
-	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase/authorization"
+	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
+	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
 	"github.com/thimovez/service/internal/usecase/token/tokenapi"
@@ -49,8 +49,8 @@ func Run(cfg *config.Config) {
 		return
 	}
 
-	UUIDProvider := uuid.NewUUIDProvider()
-	bcryptProvider := bcrypt.NewBcryptProvider()
+	UUIDProvider := uuidapi.NewUUIDProvider()
+	bcryptProvider := bcryptapi.NewBcryptProvider()
 
 	tokenUseCase := token.New(jwtProvider)
 	userUseCase := authorization.New(userRepoPG, tokenUseCase, UUIDProvider, bcryptProvider)

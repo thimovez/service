@@ -2,8 +2,8 @@ package authorization
 
 import (
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/providers/bcrypt"
-	"github.com/thimovez/service/internal/providers/uuid"
+	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
+	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
 	"github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
 )
@@ -17,15 +17,15 @@ type AuthUserService interface {
 type AuthUserUseCase struct {
 	iUserRepo       user.UserRepository
 	iTokenService   token.TokenService
-	iBcryptProvider bcrypt.BcryptProvider
-	iUUIDProvider   uuid.UUIDProvider
+	iBcryptProvider bcryptapi.BcryptProvider
+	iUUIDProvider   uuidapi.UUIDProvider
 }
 
 func New(
 	u user.UserRepository,
 	t token.TokenService,
-	up uuid.UUIDProvider,
-	bp bcrypt.BcryptProvider,
+	up uuidapi.UUIDProvider,
+	bp bcryptapi.BcryptProvider,
 ) *AuthUserUseCase {
 	return &AuthUserUseCase{
 		iUserRepo:       u,

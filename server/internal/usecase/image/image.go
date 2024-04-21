@@ -2,16 +2,16 @@ package image
 
 import (
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/providers/uuid"
+	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
 	"github.com/thimovez/service/internal/usecase/repo/postgres/image"
 )
 
 type UseCaseImage struct {
 	iImageRepo    image.ImageRepository
-	iUUIDProvider uuid.UUIDProvider
+	iUUIDProvider uuidapi.UUIDProvider
 }
 
-func New(i image.ImageRepository, up uuid.UUIDProvider) *UseCaseImage {
+func New(i image.ImageRepository, up uuidapi.UUIDProvider) *UseCaseImage {
 	return &UseCaseImage{
 		iImageRepo:    i,
 		iUUIDProvider: up,
