@@ -9,7 +9,7 @@ import (
 )
 
 type AuthUserService interface {
-	VerifyLoginData(user entity.UserRequest) (accessToken string, err error)
+	VerifyLoginData(user entity.UserRequest) (res *entity.LoginResponse, err error)
 	VerifyRegistrationData(user entity.UserRequest) (err error)
 }
 
