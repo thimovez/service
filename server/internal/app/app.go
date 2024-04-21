@@ -6,6 +6,7 @@ import (
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	userAPI "github.com/thimovez/service/internal/controller/authorization"
+	"github.com/thimovez/service/internal/controller/middlewares"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
 	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
@@ -59,7 +60,9 @@ func Run(cfg *config.Config) {
 
 	handler := gin.New()
 	//mux := http.NewServeMux()
-	//m := middlewares.New(tokenUseCase)
+	m := middlewares.New(
+		token.New(jwtProvider),
+	)
 
 	userAPI.NewRouter(handler, userUseCase)
 	//imageAPI.NewImageRoutes(mux, imageUseCase, m)

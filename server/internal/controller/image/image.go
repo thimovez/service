@@ -16,10 +16,10 @@ type imageRouter struct {
 	iImageRepo image.ImageRepository
 }
 
-func NewImageRoutes(handler *http.ServeMux, i image.ImageRepository, m *middlewares.Middleware) {
+func NewImageRoutes(handler *http.ServeMux, i image.ImageRepository, m *middlewares.Auth) {
 	r := &imageRouter{i}
 
-	handler.HandleFunc("/upload-picture", m.AuthMiddleware(r.uploadPicture))
+	handler.HandleFunc("/upload-picture", m.Auth(r.uploadPicture))
 	handler.HandleFunc("/images", m.AuthMiddleware(r.getImages))
 }
 
