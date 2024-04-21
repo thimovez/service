@@ -62,7 +62,7 @@ func (u *UserRepo) GetPassword(c context.Context, username string) (hashedPasswo
 	case err != nil:
 		log.Fatalf("query error: %v\n", err)
 	default:
-		log.Printf("username is %q, account created on %s\n", username)
+		return hashedPassword, nil
 	}
 
 	return hashedPassword, nil
@@ -77,7 +77,7 @@ func (u *UserRepo) GetID(c context.Context, username string) (id string, error e
 	case err != nil:
 		log.Fatalf("query error: %v\n", err)
 	default:
-		log.Printf("username is %q, account created on %s\n", username)
+		return id, nil
 	}
 
 	return id, nil
