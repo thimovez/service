@@ -8,9 +8,10 @@ import (
 )
 
 type UserRepository interface {
-	SaveUser(user entity.UserRequest) error
-	GetUsername(username string) error
-	GetPassword(username string) (hashedPassword string, err error)
+	SaveUser(c context.Context, user entity.UserRequest) error
+	GetUsername(c context.Context, username string) error
+	GetPassword(c context.Context, username string) (hashedPassword string, err error)
+	GetID(c context.Context, username string) (id string, err error)
 }
 
 type UserRepo struct {
@@ -24,10 +25,10 @@ func New(db *sql.DB) *UserRepo {
 }
 
 // SaveUser - save user in database and return nil if success.
-func (u *UserRepo) SaveUser(user entity.UserRequest) error {
+func (u *UserRepo) SaveUser(c context.Context, user entity.UserRequest) error {
 	q := `INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)`
 
-	_, err := u.db.Exec(q, user.ID, user.Username, user.Password)
+	_, err := u.db.ExecContext(c, q, user.ID, user.Username, user.Password)
 	if err != nil {
 		return err
 	}
@@ -37,11 +38,11 @@ func (u *UserRepo) SaveUser(user entity.UserRequest) error {
 
 // GetUsername - checks the presence of a username row in the database.
 // If username row not present in database function return nil.
-func (u *UserRepo) GetUsername(username string) error {
+func (u *UserRepo) GetUsername(c context.Context, username string) error {
 	q := `SELECT ( username ) FROM users WHERE username = $1`
 
 	var user sql.NullString
-	err := u.db.QueryRow(q, username).Scan(&user)
+	err := u.db.QueryRowContext(c, q, username).Scan(&user)
 	if !user.Valid {
 		if err == sql.ErrNoRows {
 			return nil
@@ -52,9 +53,9 @@ func (u *UserRepo) GetUsername(username string) error {
 }
 
 // GetPassword - return hashed password by username.
-func (u *UserRepo) GetPassword(username string) (hashedPassword string, error error) {
+func (u *UserRepo) GetPassword(c context.Context, username string) (hashedPassword string, error error) {
 	qGetPassword := `SELECT (password_hash) FROM users WHERE username = $1`
-	err := u.db.QueryRowContext(context.TODO(), qGetPassword, username).Scan(&hashedPassword)
+	err := u.db.QueryRowContext(c, qGetPassword, username).Scan(&hashedPassword)
 	switch {
 	case err == sql.ErrNoRows:
 		log.Printf("no user with id %d\n", username)
@@ -65,4 +66,19 @@ func (u *UserRepo) GetPassword(username string) (hashedPassword string, error er
 	}
 
 	return hashedPassword, nil
+}
+
+func (u *UserRepo) GetID(c context.Context, username string) (id string, error error) {
+	qGetID := `SELECT (id) FROM users WHERE username = $1`
+	err := u.db.QueryRowContext(c, qGetID, username).Scan(&id)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("no user with id %d\n", username)
+	case err != nil:
+		log.Fatalf("query error: %v\n", err)
+	default:
+		log.Printf("username is %q, account created on %s\n", username)
+	}
+
+	return id, nil
 }

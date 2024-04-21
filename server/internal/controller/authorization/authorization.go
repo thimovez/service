@@ -31,7 +31,7 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
-	res, err := r.a.VerifyLoginData(user)
+	res, err := r.a.VerifyLoginData(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -50,7 +50,7 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 		return
 	}
 
-	err = r.a.VerifyRegistrationData(user)
+	err = r.a.VerifyRegistrationData(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

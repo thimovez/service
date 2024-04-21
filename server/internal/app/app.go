@@ -33,7 +33,7 @@ func Run(cfg *config.Config) {
 	}
 	defer db.Close()
 
-	err = goose.Up(db, "../migrations")
+	err = goose.Up(db, "./migrations")
 	if err != nil {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}

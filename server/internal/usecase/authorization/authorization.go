@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"context"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
 	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
@@ -9,8 +10,8 @@ import (
 )
 
 type AuthUserService interface {
-	VerifyLoginData(a entity.AuthorizationReq) (res *entity.AuthorizationRes, err error)
-	VerifyRegistrationData(user entity.UserRequest) (err error)
+	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (res entity.AuthorizationRes, err error)
+	VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error)
 }
 
 // AuthUserUseCase - prefix i means that this is an interface
@@ -35,8 +36,8 @@ func New(
 	}
 }
 
-func (u *AuthUserUseCase) VerifyLoginData(a entity.AuthorizationReq) (res *entity.AuthorizationRes, err error) {
-	hashedPassword, err := u.iUserRepo.GetPassword(a.User.Username)
+func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (res entity.AuthorizationRes, err error) {
+	hashedPassword, err := u.iUserRepo.GetPassword(c, a.User.Username)
 	if err != nil {
 		return
 	}
@@ -46,7 +47,12 @@ func (u *AuthUserUseCase) VerifyLoginData(a entity.AuthorizationReq) (res *entit
 		return
 	}
 
-	//a.User.Password = ""
+	id, err := u.iUserRepo.GetID(c, a.User.Username)
+	if err != nil {
+		return
+	}
+
+	a.User.ID = id
 
 	accessToken, err := u.iTokenService.GenerateAccessToken(a)
 	if err != nil {
@@ -54,12 +60,14 @@ func (u *AuthUserUseCase) VerifyLoginData(a entity.AuthorizationReq) (res *entit
 	}
 
 	res.Tokens.AccessToken = accessToken
+	res.User.ID = id
+	res.User.Username = a.User.Username
 
 	return res, nil
 }
 
-func (u *AuthUserUseCase) VerifyRegistrationData(user entity.UserRequest) (err error) {
-	err = u.iUserRepo.GetUsername(user.Username)
+func (u *AuthUserUseCase) VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error) {
+	err = u.iUserRepo.GetUsername(c, user.Username)
 	if err != nil {
 		return
 	}
@@ -74,7 +82,7 @@ func (u *AuthUserUseCase) VerifyRegistrationData(user entity.UserRequest) (err e
 	id := u.iUUIDProvider.CreateStringUUID()
 	user.ID = id
 
-	err = u.iUserRepo.SaveUser(user)
+	err = u.iUserRepo.SaveUser(c, user)
 	if err != nil {
 		return
 	}
