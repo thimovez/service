@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
-	userAPI "github.com/thimovez/service/internal/controller/user"
+	userAPI "github.com/thimovez/service/internal/controller/authorization"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
 	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"

@@ -1,4 +1,4 @@
-package user
+package authorization
 
 import (
 	"github.com/gin-gonic/gin"
