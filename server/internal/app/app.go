@@ -6,12 +6,12 @@ import (
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	userAPI "github.com/thimovez/service/internal/controller/user"
-	"github.com/thimovez/service/internal/providers/auth"
 	"github.com/thimovez/service/internal/providers/bcrypt"
 	"github.com/thimovez/service/internal/providers/uuid"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	userRepo "github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token"
+	"github.com/thimovez/service/internal/usecase/token/tokenapi"
 	"github.com/thimovez/service/pkg/httpserver"
 	"github.com/thimovez/service/pkg/logger"
 	"github.com/thimovez/service/pkg/postgres"
@@ -43,11 +43,12 @@ func Run(cfg *config.Config) {
 	//commentRepoPG := commentRepo.New(db)
 
 	expiration := time.Now().Add(time.Hour * tokenTime)
-	jwtProvider, err := auth.NewJWTProvider(cfg.TOKEN.Secret, expiration)
+	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret, expiration)
 	if err != nil {
 		fmt.Printf("Error initializing JWT provider: %v\n", err)
 		return
 	}
+
 	UUIDProvider := uuid.NewUUIDProvider()
 	bcryptProvider := bcrypt.NewBcryptProvider()
 

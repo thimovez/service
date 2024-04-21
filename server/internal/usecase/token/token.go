@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/thimovez/service/internal/providers/auth"
+	"github.com/thimovez/service/internal/usecase/token/tokenapi"
 )
 
 type TokenService interface {
@@ -10,10 +10,10 @@ type TokenService interface {
 }
 
 type TokenUseCase struct {
-	jwtProvider auth.JWTProvider
+	jwtProvider tokenapi.JWTProvider
 }
 
-func New(jwtProvider auth.JWTProvider) *TokenUseCase {
+func New(jwtProvider tokenapi.JWTProvider) *TokenUseCase {
 	return &TokenUseCase{jwtProvider: jwtProvider}
 }
 
