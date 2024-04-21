@@ -23,7 +23,7 @@ func newAuthorizationRoutes(handler *gin.RouterGroup, a *authorization.AuthUserU
 
 func (r *authorizationRoutes) login(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/json")
-	var user entity.UserRequest
+	var user entity.AuthorizationReq
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {

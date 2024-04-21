@@ -9,7 +9,7 @@ import (
 )
 
 type AuthUserService interface {
-	VerifyLoginData(user entity.UserRequest) (res *entity.LoginResponse, err error)
+	VerifyLoginData(user entity.UserRequest) (res *entity.AuthorizationRes, err error)
 	VerifyRegistrationData(user entity.UserRequest) (err error)
 }
 
@@ -35,18 +35,20 @@ func New(
 	}
 }
 
-func (u *AuthUserUseCase) VerifyLoginData(user entity.UserRequest) (res *entity.LoginResponse, err error) {
-	hashedPassword, err := u.iUserRepo.GetPassword(user.Username)
+func (u *AuthUserUseCase) VerifyLoginData(
+	a entity.AuthorizationReq,
+) (res *entity.AuthorizationRes, err error) {
+	hashedPassword, err := u.iUserRepo.GetPassword(a.User.Username)
 	if err != nil {
 		return
 	}
 
-	err = u.iBcryptProvider.ComparePassword([]byte(hashedPassword), []byte(user.Password))
+	err = u.iBcryptProvider.ComparePassword([]byte(hashedPassword), []byte(a.User.Password))
 	if err != nil {
 		return
 	}
 
-	accessToken, err := u.iTokenService.GenerateAccessToken(user.ID)
+	accessToken, err := u.iTokenService.GenerateAccessToken(a.User.ID)
 	if err != nil {
 		return
 	}
