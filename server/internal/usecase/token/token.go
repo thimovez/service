@@ -19,12 +19,22 @@ func New(jwtProvider tokenapi.JWTProvider) *TokenUseCase {
 }
 
 func (t *TokenUseCase) GenerateAccessToken(a entity.AuthorizationReq) (accessToken string, err error) {
-	token, err := t.jwtProvider.CreateToken(a)
-	if err != nil {
-		return "", err
+	claims := map[string]interface{}{
+		"userID":   a.User.ID,
+		"username": a.User.Username,
 	}
 
-	return token, nil
+	token, err := t.jwtProvider.CreateToken(claims)
+	if err != nil {
+		return accessToken, err
+	}
+
+	accessToken, err = t.jwtProvider.SignToken(token)
+	if err != nil {
+		return accessToken, err
+	}
+
+	return accessToken, nil
 }
 
 func (t *TokenUseCase) VerifyAccessToken(tokenString string) (map[string]interface{}, error) {

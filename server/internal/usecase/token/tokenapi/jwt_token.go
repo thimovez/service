@@ -3,14 +3,14 @@ package tokenapi
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/thimovez/service/internal/entity"
 	"time"
 )
 
 const minSecretKeySize = 3
 
 type JWTProvider interface {
-	CreateToken(a entity.AuthorizationReq) (string, error)
+	CreateToken(claims map[string]interface{}) (token *jwt.Token, err error)
+	SignToken(token *jwt.Token) (signedToken string, err error)
 	VerifyToken(tokenString string) (map[string]interface{}, error)
 }
 
@@ -30,19 +30,21 @@ func NewJWTProvider(secretKey string, expiration time.Time) (JWTProvider, error)
 	}, nil
 }
 
-func (provider *JWTProviderImpl) CreateToken(a entity.AuthorizationReq) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID":   a.User.ID,
-		"username": a.User.Username,
-		"exp":      provider.expiration.Unix(),
-	})
+func (provider *JWTProviderImpl) CreateToken(claims map[string]interface{}) (token *jwt.Token, err error) {
+	var c jwt.MapClaims = claims
+	c["exp"] = provider.expiration.Unix()
+	token = jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
-	tokenString, err := token.SignedString([]byte(provider.secretKey))
+	return token, nil
+}
+
+func (provider *JWTProviderImpl) SignToken(token *jwt.Token) (signedToken string, err error) {
+	signedToken, err = token.SignedString([]byte(provider.secretKey))
 	if err != nil {
 		return "", nil
 	}
 
-	return tokenString, nil
+	return signedToken, nil
 }
 
 func (provider *JWTProviderImpl) VerifyToken(tokenString string) (map[string]interface{}, error) {
