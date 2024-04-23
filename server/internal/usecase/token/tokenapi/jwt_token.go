@@ -19,21 +19,18 @@ type JWTProviderImpl struct {
 	expiration time.Time
 }
 
-func NewJWTProvider(secretKey string, expiration time.Time) (JWTProvider, error) {
+func NewJWTProvider(secretKey string) (JWTProvider, error) {
 	if len(secretKey) < minSecretKeySize {
 		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
 	}
 
 	return &JWTProviderImpl{
-		secretKey:  secretKey,
-		expiration: expiration,
+		secretKey: secretKey,
 	}, nil
 }
 
 func (provider *JWTProviderImpl) CreateToken(claims map[string]interface{}) (token *jwt.Token, err error) {
-	var c jwt.MapClaims = claims
-	c["exp"] = provider.expiration.Unix()
-	token = jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	token = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims))
 
 	return token, nil
 }
