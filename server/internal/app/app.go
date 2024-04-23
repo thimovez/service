@@ -6,7 +6,6 @@ import (
 	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	userAPI "github.com/thimovez/service/internal/controller/authorization"
-	"github.com/thimovez/service/internal/controller/middlewares"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	"github.com/thimovez/service/internal/usecase/authorization/bcryptapi"
 	"github.com/thimovez/service/internal/usecase/authorization/uuidapi"
@@ -23,7 +22,8 @@ import (
 	"time"
 )
 
-const tokenTime = 12
+const accessTime = 2
+const refreshTime = 12
 
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.LOG.Level)
@@ -39,16 +39,18 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
-	expiration := time.Now().Add(time.Hour * tokenTime)
-	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret, expiration)
+	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret)
 	if err != nil {
 		fmt.Printf("Error initializing JWT provider: %v\n", err)
 		return
 	}
 
+	AccessExp := time.Now().Add(time.Hour * accessTime)
+	RefreshExp := time.Now().Add(time.Hour * accessTime)
+
 	userUseCase := authorization.New(
 		userRepo.New(db),
-		token.New(jwtProvider),
+		token.New(jwtProvider, AccessExp, RefreshExp),
 		uuidapi.NewUUIDProvider(),
 		bcryptapi.NewBcryptProvider(),
 	)
@@ -60,9 +62,9 @@ func Run(cfg *config.Config) {
 
 	handler := gin.New()
 	//mux := http.NewServeMux()
-	m := middlewares.New(
-		token.New(jwtProvider),
-	)
+	//m := middlewares.New(
+	//	token.New(jwtProvider),
+	//)
 
 	userAPI.NewRouter(handler, userUseCase)
 	//imageAPI.NewImageRoutes(mux, imageUseCase, m)
