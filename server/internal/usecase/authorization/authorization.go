@@ -59,7 +59,13 @@ func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.Authorizat
 		return
 	}
 
+	refreshToken, err := u.iTokenService.GenerateRefreshToken(a)
+	if err != nil {
+		return
+	}
+
 	res.Tokens.AccessToken = accessToken
+	res.Tokens.RefreshToken = refreshToken
 	res.User.ID = id
 	res.User.Username = a.User.Username
 

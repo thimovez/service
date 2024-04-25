@@ -37,6 +37,18 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie(
+		"refreshToken",
+		res.Tokens.RefreshToken,
+		36000,
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+
+	res.Tokens.RefreshToken = ""
+
 	c.JSON(http.StatusOK, res)
 }
 
