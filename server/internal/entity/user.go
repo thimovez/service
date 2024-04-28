@@ -19,6 +19,7 @@ type User struct {
 type UserRegistrationReq struct {
 	ID string `json:"id"`
 	Credentials
+	Role string `json:"role"`
 }
 
 type UserRes struct {
