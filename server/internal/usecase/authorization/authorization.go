@@ -10,7 +10,7 @@ import (
 )
 
 type AuthUserService interface {
-	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (res entity.AuthorizationRes, err error)
+	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error)
 	VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error)
 }
 
@@ -24,19 +24,17 @@ type AuthUserUseCase struct {
 
 func New(
 	u user.UserRepository,
-	t token.TokenService,
 	up uuidapi.UUIDProvider,
 	bp bcryptapi.BcryptProvider,
 ) *AuthUserUseCase {
 	return &AuthUserUseCase{
 		iUserRepo:       u,
-		iTokenService:   t,
 		iBcryptProvider: bp,
 		iUUIDProvider:   up,
 	}
 }
 
-func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (res entity.AuthorizationRes, err error) {
+func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(c, a.User.Username)
 	if err != nil {
 		return
@@ -52,24 +50,10 @@ func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.Authorizat
 		return
 	}
 
-	a.User.ID = id
+	validData.User.ID = id
+	validData.User.Username = a.User.Username
 
-	accessToken, err := u.iTokenService.GenerateAccessToken(a)
-	if err != nil {
-		return
-	}
-
-	refreshToken, err := u.iTokenService.GenerateRefreshToken(a)
-	if err != nil {
-		return
-	}
-
-	res.Tokens.AccessToken = accessToken
-	res.Tokens.RefreshToken = refreshToken
-	res.User.ID = id
-	res.User.Username = a.User.Username
-
-	return res, nil
+	return validData, nil
 }
 
 func (u *AuthUserUseCase) VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error) {

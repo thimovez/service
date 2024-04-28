@@ -3,9 +3,10 @@ package authorization
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thimovez/service/internal/usecase/authorization"
+	"github.com/thimovez/service/internal/usecase/token"
 )
 
-func NewRouter(handler *gin.Engine, a *authorization.AuthUserUseCase) {
+func NewRouter(handler *gin.Engine, a *authorization.AuthUserUseCase, t token.TokenService) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 
@@ -13,6 +14,6 @@ func NewRouter(handler *gin.Engine, a *authorization.AuthUserUseCase) {
 	h := handler.Group("/v1")
 	{
 
-		newAuthorizationRoutes(h, a)
+		newAuthorizationRoutes(h, a, t)
 	}
 }

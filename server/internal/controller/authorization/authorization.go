@@ -4,15 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization"
+	"github.com/thimovez/service/internal/usecase/token"
 	"net/http"
 )
 
 type authorizationRoutes struct {
 	a authorization.AuthUserService
+	t token.TokenService
 }
 
-func newAuthorizationRoutes(handler *gin.RouterGroup, a authorization.AuthUserService) {
-	r := &authorizationRoutes{a}
+func newAuthorizationRoutes(handler *gin.RouterGroup, a authorization.AuthUserService, t token.TokenService) {
+	r := &authorizationRoutes{
+		a,
+		t,
+	}
 
 	h := handler.Group("/authorization")
 	{
@@ -31,7 +36,19 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
-	res, err := r.a.VerifyLoginData(c.Request.Context(), user)
+	validData, err := r.a.VerifyLoginData(c.Request.Context(), user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	accessToken, err := r.t.GenerateAccessToken(validData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	refreshToken, err := r.t.GenerateRefreshToken(validData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -39,7 +56,7 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 
 	c.SetCookie(
 		"refreshToken",
-		res.Tokens.RefreshToken,
+		refreshToken,
 		36000,
 		"/",
 		"localhost",
@@ -47,7 +64,15 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		true,
 	)
 
-	res.Tokens.RefreshToken = ""
+	res := entity.AuthorizationRes{
+		User: entity.UserResponse{
+			ID:       validData.User.ID,
+			Username: validData.User.Username,
+		},
+		Tokens: entity.Token{
+			AccessToken: accessToken,
+		},
+	}
 
 	c.JSON(http.StatusOK, res)
 }

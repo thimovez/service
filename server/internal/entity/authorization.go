@@ -2,7 +2,7 @@ package entity
 
 type AuthorizationRes struct {
 	User   UserResponse `json:"user"`
-	Tokens Tokens       `json:"tokens"`
+	Tokens Token        `json:"token"`
 }
 
 type AuthorizationReq struct {

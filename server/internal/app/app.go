@@ -50,7 +50,6 @@ func Run(cfg *config.Config) {
 
 	userUseCase := authorization.New(
 		userRepo.New(db),
-		token.New(jwtProvider, AccessExp, RefreshExp),
 		uuidapi.NewUUIDProvider(),
 		bcryptapi.NewBcryptProvider(),
 	)
@@ -66,7 +65,12 @@ func Run(cfg *config.Config) {
 	//	token.New(jwtProvider),
 	//)
 
-	userAPI.NewRouter(handler, userUseCase)
+	t := token.New(jwtProvider, AccessExp, RefreshExp)
+	userAPI.NewRouter(
+		handler,
+		userUseCase,
+		t,
+	)
 	//imageAPI.NewImageRoutes(mux, imageUseCase, m)
 	//commentAPI.NewCommentRoutes(mux, commentUseCase)
 
