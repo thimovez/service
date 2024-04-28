@@ -11,7 +11,7 @@ import (
 
 type AuthUserService interface {
 	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error)
-	VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error)
+	VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error)
 }
 
 // AuthUserUseCase - prefix i means that this is an interface
@@ -56,7 +56,7 @@ func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.Authorizat
 	return validData, nil
 }
 
-func (u *AuthUserUseCase) VerifyRegistrationData(c context.Context, user entity.UserRequest) (err error) {
+func (u *AuthUserUseCase) VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error) {
 	err = u.iUserRepo.GetUsername(c, user.Username)
 	if err != nil {
 		return

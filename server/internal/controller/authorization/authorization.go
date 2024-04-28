@@ -65,11 +65,11 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 	)
 
 	res := entity.AuthorizationRes{
-		User: entity.UserResponse{
+		User: entity.UserRes{
 			ID:       validData.User.ID,
 			Username: validData.User.Username,
 		},
-		Tokens: entity.Token{
+		Token: entity.Token{
 			AccessToken: accessToken,
 		},
 	}
@@ -79,7 +79,7 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 
 func (r *authorizationRoutes) registration(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/json")
-	var user entity.UserRequest
+	var user entity.UserRegistrationReq
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {

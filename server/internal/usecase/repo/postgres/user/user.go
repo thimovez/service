@@ -8,7 +8,7 @@ import (
 )
 
 type UserRepository interface {
-	SaveUser(c context.Context, user entity.UserRequest) error
+	SaveUser(c context.Context, user entity.User) error
 	GetUsername(c context.Context, username string) error
 	GetPassword(c context.Context, username string) (hashedPassword string, err error)
 	GetID(c context.Context, username string) (id string, err error)
@@ -25,7 +25,7 @@ func New(db *sql.DB) *UserRepo {
 }
 
 // SaveUser - save user in database and return nil if success.
-func (u *UserRepo) SaveUser(c context.Context, user entity.UserRequest) error {
+func (u *UserRepo) SaveUser(c context.Context, user entity.User) error {
 	q := `INSERT INTO users (id, username, password_hash) VALUES ($1, $2, $3)`
 
 	_, err := u.db.ExecContext(c, q, user.ID, user.Username, user.Password)
