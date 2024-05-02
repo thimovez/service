@@ -15,6 +15,7 @@ import (
 	"github.com/thimovez/service/pkg/httpserver"
 	"github.com/thimovez/service/pkg/logger"
 	"github.com/thimovez/service/pkg/postgres"
+	"github.com/thimovez/service/pkg/validator"
 	"log"
 	"os"
 	"os/signal"
@@ -70,6 +71,7 @@ func Run(cfg *config.Config) {
 		handler,
 		userUseCase,
 		t,
+		validator.New(),
 	)
 	//imageAPI.NewImageRoutes(mux, imageUseCase, m)
 	//commentAPI.NewCommentRoutes(mux, commentUseCase)

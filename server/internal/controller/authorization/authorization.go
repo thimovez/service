@@ -5,18 +5,26 @@ import (
 	"github.com/thimovez/service/internal/entity"
 	"github.com/thimovez/service/internal/usecase/authorization"
 	"github.com/thimovez/service/internal/usecase/token"
+	"github.com/thimovez/service/pkg/validator"
 	"net/http"
 )
 
 type authorizationRoutes struct {
 	a authorization.AuthUserService
 	t token.TokenService
+	v validator.IValidator
 }
 
-func newAuthorizationRoutes(handler *gin.RouterGroup, a authorization.AuthUserService, t token.TokenService) {
+func newAuthorizationRoutes(
+	handler *gin.RouterGroup,
+	a authorization.AuthUserService,
+	t token.TokenService,
+	v validator.IValidator,
+) {
 	r := &authorizationRoutes{
 		a,
 		t,
+		v,
 	}
 
 	h := handler.Group("/authorization")
@@ -33,6 +41,11 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = r.v.ValidateStruct(user)
+	if err != nil {
 		return
 	}
 

@@ -6,5 +6,5 @@ type AuthorizationRes struct {
 }
 
 type AuthorizationReq struct {
-	User UserRegistrationReq `json:"user"`
+	User UserRegistrationReq `json:"user" validate:"required"`
 }
