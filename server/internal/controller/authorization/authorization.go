@@ -95,11 +95,9 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 		return
 	}
 
-	err = r.v.ValidateStruct(user)
-	if err != nil {
-		//fmt.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		//c.Error(err).SetType(gin.ErrorTypeBind)
+	errors := r.v.ValidateStruct(user)
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, errors)
 		return
 	}
 
