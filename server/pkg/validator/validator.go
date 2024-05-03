@@ -13,7 +13,7 @@ type Validator struct {
 }
 
 func New() *Validator {
-	validate := validator.New(validator.WithRequiredStructEnabled())
+	validate := validator.New()
 
 	v := &Validator{validate: validate}
 
@@ -23,6 +23,8 @@ func New() *Validator {
 func (v *Validator) ValidateStruct(s interface{}) error {
 	err := v.validate.Struct(s)
 	if err != nil {
+		err = err.(validator.ValidationErrors)
+		//fmt.Sprintf("Validation error: %s", errors)
 		return err
 	}
 

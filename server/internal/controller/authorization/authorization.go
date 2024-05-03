@@ -44,11 +44,6 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
-	err = r.v.ValidateStruct(user)
-	if err != nil {
-		return
-	}
-
 	validData, err := r.a.VerifyLoginData(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -97,6 +92,14 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = r.v.ValidateStruct(user)
+	if err != nil {
+		//fmt.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		//c.Error(err).SetType(gin.ErrorTypeBind)
 		return
 	}
 
