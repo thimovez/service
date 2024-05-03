@@ -9,13 +9,13 @@ import (
 	"github.com/thimovez/service/internal/usecase/token"
 )
 
-type AuthUserService interface {
+type AuthService interface {
 	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error)
 	VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error)
 }
 
-// AuthUserUseCase - prefix i means that this is an interface
-type AuthUserUseCase struct {
+// AuthUseCase - prefix i means that this is an interface
+type AuthUseCase struct {
 	iUserRepo       user.UserRepository
 	iTokenService   token.TokenService
 	iBcryptProvider bcryptapi.BcryptProvider
@@ -26,15 +26,15 @@ func New(
 	u user.UserRepository,
 	up uuidapi.UUIDProvider,
 	bp bcryptapi.BcryptProvider,
-) *AuthUserUseCase {
-	return &AuthUserUseCase{
+) *AuthUseCase {
+	return &AuthUseCase{
 		iUserRepo:       u,
 		iBcryptProvider: bp,
 		iUUIDProvider:   up,
 	}
 }
 
-func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error) {
+func (u *AuthUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(c, a.User.Username)
 	if err != nil {
 		return
@@ -56,7 +56,7 @@ func (u *AuthUserUseCase) VerifyLoginData(c context.Context, a entity.Authorizat
 	return validData, nil
 }
 
-func (u *AuthUserUseCase) VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error) {
+func (u *AuthUseCase) VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error) {
 	err = u.iUserRepo.GetUsername(c, user.Username)
 	if err != nil {
 		return

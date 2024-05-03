@@ -10,14 +10,14 @@ import (
 )
 
 type authorizationRoutes struct {
-	a authorization.AuthUserService
+	a authorization.AuthService
 	t token.TokenService
 	v validator.IValidator
 }
 
 func newAuthorizationRoutes(
 	handler *gin.RouterGroup,
-	a authorization.AuthUserService,
+	a authorization.AuthService,
 	t token.TokenService,
 	v validator.IValidator,
 ) {
@@ -35,7 +35,6 @@ func newAuthorizationRoutes(
 }
 
 func (r *authorizationRoutes) login(c *gin.Context) {
-	c.Writer.Header().Set("Content-Type", "application/json")
 	var user entity.AuthorizationReq
 
 	err := c.ShouldBindJSON(&user)
@@ -82,11 +81,11 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		},
 	}
 
+	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, res)
 }
 
 func (r *authorizationRoutes) registration(c *gin.Context) {
-	c.Writer.Header().Set("Content-Type", "application/json")
 	var user entity.UserRegistrationReq
 
 	err := c.ShouldBindJSON(&user)
@@ -107,5 +106,6 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 		return
 	}
 
+	c.Writer.Header().Set("Content-Type", "application/json")
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }

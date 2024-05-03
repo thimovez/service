@@ -9,7 +9,7 @@ import (
 
 func NewRouter(
 	handler *gin.Engine,
-	a *authorization.AuthUserUseCase,
+	a *authorization.AuthUseCase,
 	t token.TokenService,
 	v validator.IValidator,
 ) {
