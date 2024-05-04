@@ -67,7 +67,7 @@ func Run(cfg *config.Config) {
 	//)
 
 	t := token.New(jwtProvider, AccessExp, RefreshExp)
-	userAPI.NewRouter(
+	userAPI.NewAuthorizationRoutes(
 		handler,
 		userUseCase,
 		t,

@@ -3,36 +3,8 @@ package authorization
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thimovez/service/internal/entity"
-	"github.com/thimovez/service/internal/usecase/authorization"
-	"github.com/thimovez/service/internal/usecase/token"
-	"github.com/thimovez/service/pkg/validator"
 	"net/http"
 )
-
-type authorizationRoutes struct {
-	a authorization.AuthService
-	t token.TokenService
-	v validator.IValidator
-}
-
-func newAuthorizationRoutes(
-	handler *gin.RouterGroup,
-	a authorization.AuthService,
-	t token.TokenService,
-	v validator.IValidator,
-) {
-	r := &authorizationRoutes{
-		a,
-		t,
-		v,
-	}
-
-	h := handler.Group("/authorization")
-	{
-		h.POST("/login", r.login)
-		h.POST("/registration", r.registration)
-	}
-}
 
 func (r *authorizationRoutes) login(c *gin.Context) {
 	var user entity.AuthorizationReq

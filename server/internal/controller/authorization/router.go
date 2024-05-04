@@ -7,19 +7,30 @@ import (
 	"github.com/thimovez/service/pkg/validator"
 )
 
-func NewRouter(
+type authorizationRoutes struct {
+	a authorization.AuthService
+	t token.TokenService
+	v validator.IValidator
+}
+
+func NewAuthorizationRoutes(
 	handler *gin.Engine,
-	a *authorization.AuthUseCase,
+	a authorization.AuthService,
 	t token.TokenService,
 	v validator.IValidator,
 ) {
+	r := &authorizationRoutes{
+		a,
+		t,
+		v,
+	}
+
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 
-	// Routers
-	h := handler.Group("/v1")
+	h := handler.Group("/authorization")
 	{
-
-		newAuthorizationRoutes(h, a, t, v)
+		h.POST("/login", r.login)
+		h.POST("/registration", r.registration)
 	}
 }
