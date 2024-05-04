@@ -2,7 +2,7 @@ package entity
 
 type Comment struct {
 	ID      uint64        `json:"id"`
-	Author  UserRes       `json:"author"`
+	Author  User          `json:"author"`
 	Content string        `json:"content"`
 	Parent  ParentComment `json:"parent"`
 }
@@ -18,6 +18,6 @@ type CreateCommentReq struct {
 }
 
 type CreateCommentRes struct {
-	Author  UserRes `json:"author"`
+	Author  User    `json:"author"`
 	Comment Comment `json:"comment"`
 }

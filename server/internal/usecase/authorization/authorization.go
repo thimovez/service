@@ -10,7 +10,7 @@ import (
 )
 
 type AuthService interface {
-	VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error)
+	VerifyLoginData(c context.Context, a entity.LoginReq) (validData entity.LoginRes, err error)
 	VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error)
 }
 
@@ -34,7 +34,7 @@ func New(
 	}
 }
 
-func (u *AuthUseCase) VerifyLoginData(c context.Context, a entity.AuthorizationReq) (validData entity.AuthorizationReq, err error) {
+func (u *AuthUseCase) VerifyLoginData(c context.Context, a entity.LoginReq) (validData entity.LoginRes, err error) {
 	hashedPassword, err := u.iUserRepo.GetPassword(c, a.User.Username)
 	if err != nil {
 		return

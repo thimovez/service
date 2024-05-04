@@ -1,10 +1,14 @@
 package entity
 
-type AuthorizationRes struct {
-	User  UserRes `json:"user"`
-	Token Token   `json:"token"`
+type AuthorizationReq struct {
+	User Credentials
 }
 
-type AuthorizationReq struct {
-	User UserRegistrationReq `json:"user" validate:"required"`
+type LoginRes struct {
+	User  UserLoginRes `json:"user"`
+	Token Token        `json:"token"`
+}
+
+type LoginReq struct {
+	User UserLoginReq `json:"user"`
 }

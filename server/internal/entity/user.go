@@ -22,7 +22,12 @@ type UserRegistrationReq struct {
 	Role string `json:"role"`
 }
 
-type UserRes struct {
+type UserLoginRes struct {
 	ID       string `json:"id"`
-	Username string `json:"username"`
+	Username string `json:"username" validate:"required"`
+}
+
+type UserLoginReq struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func (r *authorizationRoutes) login(c *gin.Context) {
-	var user entity.AuthorizationReq
+	var user entity.LoginReq
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
@@ -43,8 +43,8 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		true,
 	)
 
-	res := entity.AuthorizationRes{
-		User: entity.UserRes{
+	res := entity.LoginRes{
+		User: entity.UserLoginRes{
 			ID:       validData.User.ID,
 			Username: validData.User.Username,
 		},

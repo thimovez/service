@@ -7,8 +7,8 @@ import (
 )
 
 type TokenService interface {
-	GenerateAccessToken(a entity.AuthorizationReq) (accessToken string, err error)
-	GenerateRefreshToken(a entity.AuthorizationReq) (refreshToken string, err error)
+	GenerateAccessToken(a entity.LoginRes) (accessToken string, err error)
+	GenerateRefreshToken(a entity.LoginRes) (refreshToken string, err error)
 	VerifyAccessToken(tokenString string) (map[string]interface{}, error)
 }
 
@@ -26,7 +26,7 @@ func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.
 	}
 }
 
-func (t *TokenUseCase) GenerateAccessToken(a entity.AuthorizationReq) (accessToken string, err error) {
+func (t *TokenUseCase) GenerateAccessToken(a entity.LoginRes) (accessToken string, err error) {
 	claims := map[string]interface{}{
 		"userID":   a.User.ID,
 		"username": a.User.Username,
@@ -46,7 +46,7 @@ func (t *TokenUseCase) GenerateAccessToken(a entity.AuthorizationReq) (accessTok
 	return accessToken, nil
 }
 
-func (t *TokenUseCase) GenerateRefreshToken(a entity.AuthorizationReq) (refreshToken string, err error) {
+func (t *TokenUseCase) GenerateRefreshToken(a entity.LoginRes) (refreshToken string, err error) {
 	claims := map[string]interface{}{
 		"userID": a.User.ID,
 		"exp":    t.refreshExpiration.Unix(),
