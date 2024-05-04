@@ -28,7 +28,7 @@ func New(db *sql.DB) *UserRepo {
 func (u *UserRepo) SaveUser(c context.Context, user entity.User) error {
 	q := `INSERT INTO users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)`
 
-	_, err := u.db.ExecContext(c, q, user.ID, user, user.Email, user.Password)
+	_, err := u.db.ExecContext(c, q, user.ID, user.Username, user.Email, user.Password)
 	if err != nil {
 		return err
 	}
