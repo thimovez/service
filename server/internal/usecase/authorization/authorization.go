@@ -11,7 +11,7 @@ import (
 
 type AuthService interface {
 	VerifyLoginData(c context.Context, a entity.LoginReq) (validData entity.LoginRes, err error)
-	VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error)
+	VerifyRegistrationData(c context.Context, user entity.RegistrationReq) (err error)
 }
 
 // AuthUseCase - prefix i means that this is an interface
@@ -34,45 +34,51 @@ func New(
 	}
 }
 
-func (u *AuthUseCase) VerifyLoginData(c context.Context, a entity.LoginReq) (validData entity.LoginRes, err error) {
-	hashedPassword, err := u.iUserRepo.GetPassword(c, a.User.Username)
+func (a *AuthUseCase) VerifyLoginData(c context.Context, l entity.LoginReq) (validData entity.LoginRes, err error) {
+	hashedPassword, err := a.iUserRepo.GetPassword(c, l.User.Username)
 	if err != nil {
 		return
 	}
 
-	err = u.iBcryptProvider.ComparePassword([]byte(hashedPassword), []byte(a.User.Password))
+	err = a.iBcryptProvider.ComparePassword([]byte(hashedPassword), []byte(l.User.Password))
 	if err != nil {
 		return
 	}
 
-	id, err := u.iUserRepo.GetID(c, a.User.Username)
+	id, err := a.iUserRepo.GetID(c, l.User.Username)
 	if err != nil {
 		return
 	}
 
 	validData.User.ID = id
-	validData.User.Username = a.User.Username
+	validData.User.Username = l.User.Username
 
 	return validData, nil
 }
 
-func (u *AuthUseCase) VerifyRegistrationData(c context.Context, user entity.UserRegistrationReq) (err error) {
-	err = u.iUserRepo.GetUsername(c, user.Username)
+func (a *AuthUseCase) VerifyRegistrationData(c context.Context, r entity.RegistrationReq) (err error) {
+	err = a.iUserRepo.GetUsername(c, r.User.Username)
 	if err != nil {
 		return
 	}
 
-	hashedPassword, err := u.iBcryptProvider.HashPassword(user.Password)
+	hashedPassword, err := a.iBcryptProvider.HashPassword(r.User.Password)
 	if err != nil {
 		return
 	}
 
-	user.Password = string(hashedPassword)
+	id := a.iUUIDProvider.CreateStringUUID()
 
-	id := u.iUUIDProvider.CreateStringUUID()
-	user.ID = id
+	u := entity.User{
+		ID: id,
+		Credentials: entity.Credentials{
+			Email:    r.User.Email,
+			Username: r.User.Username,
+			Password: string(hashedPassword),
+		},
+	}
 
-	err = u.iUserRepo.SaveUser(c, user)
+	err = a.iUserRepo.SaveUser(c, u)
 	if err != nil {
 		return
 	}

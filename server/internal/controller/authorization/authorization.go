@@ -58,7 +58,7 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 }
 
 func (r *authorizationRoutes) registration(c *gin.Context) {
-	var user entity.UserRegistrationReq
+	var user entity.RegistrationReq
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {

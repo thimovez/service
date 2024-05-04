@@ -8,3 +8,7 @@ type LoginRes struct {
 type LoginReq struct {
 	User UserLoginReq `json:"user"`
 }
+
+type RegistrationReq struct {
+	User Credentials `json:"user"`
+}
