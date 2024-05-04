@@ -9,7 +9,7 @@ import (
 )
 
 type Auth interface {
-	ValidateAuth() gin.HandlerFunc
+	CheckAuth() gin.HandlerFunc
 }
 
 type Middleware struct {
@@ -20,7 +20,7 @@ func New(t token.TokenService) *Middleware {
 	return &Middleware{t}
 }
 
-func (m *Middleware) ValidateAuth() gin.HandlerFunc {
+func (m *Middleware) CheckAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the Authorization header
 		authHeader := c.GetHeader("Authorization")
