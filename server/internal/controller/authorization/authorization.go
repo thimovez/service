@@ -79,5 +79,5 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 	}
 
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	c.Status(http.StatusOK)
 }
