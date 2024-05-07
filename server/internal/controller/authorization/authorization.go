@@ -15,6 +15,12 @@ func (r *authorizationRoutes) login(c *gin.Context) {
 		return
 	}
 
+	errors := r.v.ValidateStruct(user)
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, errors)
+		return
+	}
+
 	validData, err := r.a.VerifyLoginData(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
