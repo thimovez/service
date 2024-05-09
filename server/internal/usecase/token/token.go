@@ -9,13 +9,16 @@ import (
 type TokenService interface {
 	GenerateAccessToken(a entity.LoginRes) (accessToken string, err error)
 	GenerateRefreshToken(a entity.LoginRes) (refreshToken string, err error)
-	VerifyAccessToken(tokenString string) (map[string]interface{}, error)
+	VerifyAccessToken(tokenString string) error
+	VerifyRefreshToken(tokenString string) error
 }
 
 type TokenUseCase struct {
 	jwtProvider       tokenapi.JWTProvider
 	accessExpiration  time.Time
 	refreshExpiration time.Time
+	accessSecret      byte
+	refreshSecret     byte
 }
 
 func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.Time) *TokenUseCase {
@@ -38,7 +41,7 @@ func (t *TokenUseCase) GenerateAccessToken(a entity.LoginRes) (accessToken strin
 		return accessToken, err
 	}
 
-	accessToken, err = t.jwtProvider.SignToken(token)
+	accessToken, err = t.jwtProvider.SignToken(token, t.accessSecret)
 	if err != nil {
 		return accessToken, err
 	}
@@ -54,22 +57,31 @@ func (t *TokenUseCase) GenerateRefreshToken(a entity.LoginRes) (refreshToken str
 
 	token, err := t.jwtProvider.CreateToken(claims)
 	if err != nil {
-		return refreshToken, err
+		return "", err
 	}
 
-	refreshToken, err = t.jwtProvider.SignToken(token)
+	refreshToken, err = t.jwtProvider.SignToken(token, t.refreshSecret)
 	if err != nil {
-		return refreshToken, err
+		return "", err
 	}
 
 	return refreshToken, nil
 }
 
-func (t *TokenUseCase) VerifyAccessToken(tokenString string) (map[string]interface{}, error) {
-	claims, err := t.jwtProvider.VerifyToken(tokenString)
+func (t *TokenUseCase) VerifyAccessToken(tokenString string) error {
+	err := t.jwtProvider.VerifyToken(tokenString, t.accessSecret)
 	if err != nil {
-		return claims, err
+		return err
 	}
 
-	return claims, err
+	return err
+}
+
+func (t *TokenUseCase) VerifyRefreshToken(refreshToken string) error {
+	err := t.jwtProvider.VerifyToken(refreshToken, t.refreshSecret)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

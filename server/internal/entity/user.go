@@ -5,7 +5,7 @@ import "time"
 type Credentials struct {
 	Email    string `json:"email" validate:"required"`
 	Username string `json:"username" validate:"required,min=5,max=20"`
-	Password string `json:"password" validate:"required,min=6,max=64,regexp=[a-zA-Z0-9]*"`
+	Password string `json:"password" validate:"required,min=6,max=64,regex=^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"`
 }
 
 type User struct {

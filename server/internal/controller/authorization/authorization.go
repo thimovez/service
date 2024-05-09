@@ -87,3 +87,24 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Status(http.StatusOK)
 }
+
+func (r *authorizationRoutes) logout(c *gin.Context) {
+	refreshToken, err := c.Cookie("refreshToken")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = r.t.VerifyRefreshToken(refreshToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.SetCookie("refreshToken", "", -1, "/", "localhost", false, true)
+
+	c.Status(http.StatusOK)
+}
+
+// when access token expired need call refresh controller
+func (r *authorizationRoutes) refresh(c *gin.Context) {}
