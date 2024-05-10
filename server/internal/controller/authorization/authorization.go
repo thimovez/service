@@ -89,13 +89,7 @@ func (r *authorizationRoutes) registration(c *gin.Context) {
 }
 
 func (r *authorizationRoutes) logout(c *gin.Context) {
-	refreshToken, err := c.Cookie("refreshToken")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = r.t.VerifyRefreshToken(refreshToken)
+	_, err := c.Cookie("refreshToken")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
