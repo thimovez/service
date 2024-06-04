@@ -1,0 +1,15 @@
+http:
+  port: ":8080"
+
+postgres:
+  username: "user"
+  password: "password"
+  host: "s-psql"
+  port: "5432"
+  database: "service"
+
+token:
+  secret: "secret"
+
+logger:
+  log_level: 'debug'
