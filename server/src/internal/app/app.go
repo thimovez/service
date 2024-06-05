@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pressly/goose"
 	"github.com/thimovez/service/config"
 	userAPI "github.com/thimovez/service/internal/controller/authorization"
 	"github.com/thimovez/service/internal/usecase/authorization"
@@ -38,7 +39,7 @@ func Run(cfg *config.Config) {
 	// 	cfg.PG.Database)
 	// fmt.Println(connStr)
 
-	connStr := "user=user password=password host=s-psql dbname=service sslmode=disable"
+	connStr := "user=user password=password host=s-psql port=5432 dbname=service sslmode=disable"
 
 	db, err := postgres.SetupDB(connStr)
 	if err != nil {
@@ -46,10 +47,10 @@ func Run(cfg *config.Config) {
 	}
 	defer db.Close()
 
-	// err = goose.Up(db, "../migrations")
-	// if err != nil {
-	// 	log.Fatal(fmt.Errorf("migration error: %w", err))
-	// }
+	err = goose.Up(db, "./migrations")
+	if err != nil {
+		log.Fatal(fmt.Errorf("migration error: %w", err))
+	}
 
 	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret)
 	if err != nil {
