@@ -15,7 +15,7 @@ FROM alpine AS runner
 
 COPY --from=builder /usr/local/src/bin/service /
 COPY --from=builder /usr/local/src/config/config.yml /
-COPY --from=builder /usr/local/src/migrations /
+COPY --from=builder /usr/local/src/migrations /migrations
 
 EXPOSE 8080
 
