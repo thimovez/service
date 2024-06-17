@@ -1,19 +1,30 @@
-version: '3.8'
 services:
   service:
-    build: ..
-    command: ./service
+    image: service:local
+    container_name: s-backend
+    depends_on:
+      postgresql:
+        condition: service_healthy
     ports:
       - "8080:8080"
-    depends_on:
-      - db
-
-  db:
-    restart: always
-    image: postgres:latest
+    # restart: on-failure
+  postgresql:
+    image: postgres:16-alpine
+    container_name: s-psql
     environment:
       POSTGRES_DB: service
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d service -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    
+networks:
+  server-side:

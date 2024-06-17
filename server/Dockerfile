@@ -1,13 +1,22 @@
-FROM golang:1.18
+FROM golang:1.20-alpine AS builder
 
-ENV GOPATH=/
+WORKDIR /usr/local/src
 
-# Copy the local package files to the container's workspace
-COPY .. .
+RUN apk --no-cache add bash git make gcc gettext musl-dev
 
-# Build the Go application
+COPY src/go.mod src/go.sum ./
 RUN go mod download
-RUN go build -o service ./cmd/server/main.go
 
-# Command to run the application
-CMD ["./service"]
+# Build the application
+COPY src ./
+RUN go build -o ./bin/service ./cmd/app/main.go
+
+FROM alpine AS runner
+
+COPY --from=builder /usr/local/src/bin/service /
+COPY --from=builder /usr/local/src/config/config.yml /
+COPY --from=builder /usr/local/src/migrations /migrations
+
+EXPOSE 8080
+
+CMD [ "/service" ]
