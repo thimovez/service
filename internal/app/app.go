@@ -31,15 +31,11 @@ func Run(cfg *config.Config) {
 	l := logger.New(cfg.LOG.Level)
 
 	// Construct the connection string
-	// connStr := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=require",
-	// 	cfg.PG.Username,
-	// 	cfg.PG.Password,
-	// 	cfg.PG.Host,
-	// 	cfg.PG.Port,
-	// 	cfg.PG.Database)
-	// fmt.Println(connStr)
-
-	connStr := "user=user password=password host=s-psql port=5432 dbname=service sslmode=disable"
+	connStr := fmt.Sprintf("user=%s password=%s port=%s dbname=%s sslmode=disable",
+		cfg.PG.Username,
+		cfg.PG.Password,
+		cfg.PG.Port,
+		cfg.PG.Database)
 
 	db, err := postgres.SetupDB(connStr)
 	if err != nil {
@@ -60,6 +56,7 @@ func Run(cfg *config.Config) {
 
 	AccessExp := time.Now().Add(time.Hour * accessTime)
 	RefreshExp := time.Now().Add(time.Hour * accessTime)
+	secret = cfg.TOKEN.Secret
 
 	userUseCase := authorization.New(
 		userRepo.New(db),
@@ -78,7 +75,7 @@ func Run(cfg *config.Config) {
 	//	token.New(jwtProvider),
 	//)
 
-	t := token.New(jwtProvider, AccessExp, RefreshExp)
+	t := token.New(jwtProvider, AccessExp, RefreshExp, secret)
 	userAPI.NewAuthorizationRoutes(
 		handler,
 		userUseCase,
