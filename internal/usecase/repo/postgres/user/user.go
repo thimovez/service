@@ -11,7 +11,7 @@ type UserRepository interface {
 	SaveUser(c context.Context, user entity.User) error
 	GetUsername(c context.Context, username string) error
 	GetPassword(c context.Context, username string) (hashedPassword string, err error)
-	GetID(c context.Context, username string) (id string, err error)
+	GetIDByUsername(c context.Context, username string) (id string, err error)
 }
 
 type UserRepo struct {
@@ -68,7 +68,7 @@ func (u *UserRepo) GetPassword(c context.Context, username string) (hashedPasswo
 	return hashedPassword, nil
 }
 
-func (u *UserRepo) GetID(c context.Context, username string) (id string, error error) {
+func (u *UserRepo) GetIDByUsername(c context.Context, username string) (id string, error error) {
 	qGetID := `SELECT (id) FROM users WHERE username = $1`
 	err := u.db.QueryRowContext(c, qGetID, username).Scan(&id)
 	switch {
@@ -81,4 +81,9 @@ func (u *UserRepo) GetID(c context.Context, username string) (id string, error e
 	}
 
 	return id, nil
+}
+
+// TODO return user withoud sensitive data
+func (u *UserRepo) GetUserByID(c context.Context, id string) (user entity.User, error error) {
+	return
 }

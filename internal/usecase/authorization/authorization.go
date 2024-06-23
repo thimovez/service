@@ -45,7 +45,7 @@ func (a *AuthUseCase) VerifyLoginData(c context.Context, l entity.LoginReq) (val
 		return
 	}
 
-	id, err := a.iUserRepo.GetID(c, l.User.Username)
+	id, err := a.iUserRepo.GetIDByUsername(c, l.User.Username)
 	if err != nil {
 		return
 	}

@@ -10,6 +10,7 @@ type JWTProvider interface {
 	CreateToken(claims map[string]interface{}) (token *jwt.Token, err error)
 	SignToken(token *jwt.Token, secret []byte) (signedToken string, err error)
 	VerifyToken(tokenString string, secret []byte) error
+	ExtractClaims(tokenStr string, secret []byte) (claims jwt.MapClaims, err error)
 }
 
 type JWTProviderImpl struct{}
@@ -52,4 +53,24 @@ func (j *JWTProviderImpl) VerifyToken(tokenString string, secret []byte) error {
 	}
 
 	return nil
+}
+
+func (j *JWTProviderImpl) ExtractClaims(tokenStr string, secret []byte) (claims jwt.MapClaims, err error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return secret, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); !ok && !token.Valid {
+		return claims, fmt.Errorf("invalid jwt token")
+	}
+
+	return claims, nil
 }

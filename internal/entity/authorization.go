@@ -12,3 +12,8 @@ type LoginReq struct {
 type RegistrationReq struct {
 	User Credentials `json:"user"`
 }
+
+type RefreshRes struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}

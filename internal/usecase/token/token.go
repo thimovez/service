@@ -2,6 +2,7 @@ package token
 
 import (
 	"github.com/thimovez/service/internal/entity"
+	"github.com/thimovez/service/internal/usecase/repo/postgres/user"
 	"github.com/thimovez/service/internal/usecase/token/tokenapi"
 	"time"
 )
@@ -11,6 +12,7 @@ type TokenService interface {
 	GenerateRefreshToken(a entity.LoginRes) (refreshToken string, err error)
 	VerifyAccessToken(tokenString string) error
 	VerifyRefreshToken(tokenString string) error
+	Refresh(refreshTokenString string) (t entity.RefreshRes, err error)
 }
 
 type TokenUseCase struct {
@@ -19,11 +21,18 @@ type TokenUseCase struct {
 	refreshExpiration time.Time
 	accessSecret      string
 	refreshSecret     string
+	userRepo          user.UserRepository
 }
 
 const minSecretKeySize = 3
 
-func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.Time, secret string) *TokenUseCase {
+func New(
+	jwtProvider tokenapi.JWTProvider,
+	accessExp time.Time,
+	refreshExp time.Time,
+	secret string,
+	userRepo user.UserRepository,
+) *TokenUseCase {
 	//TODO add err to New function
 	//if secret < minSecretKeySize {
 	//	return fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
@@ -34,6 +43,7 @@ func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.
 		refreshExpiration: refreshExp,
 		accessSecret:      secret,
 		refreshSecret:     secret,
+		userRepo:          userRepo,
 	}
 }
 
@@ -92,4 +102,22 @@ func (t *TokenUseCase) VerifyRefreshToken(refreshToken string) error {
 	}
 
 	return nil
+}
+
+func (t *TokenUseCase) Refresh(refreshTokenString string) (tokens entity.RefreshRes, err error) {
+	err = t.jwtProvider.VerifyToken(refreshTokenString, []byte(t.refreshSecret))
+	if err != nil {
+		return tokens, err
+	}
+
+	claims, err := t.jwtProvider.ExtractClaims(refreshTokenString, []byte(t.refreshSecret))
+	if err != nil {
+		return tokens, err
+	}
+
+	t.userRepo.
+	// TODO Get id from claims and check if user exist with this id
+	// TODO If exist create new access token and refresh token with claims received from ExtractClaims
+
+	return
 }
