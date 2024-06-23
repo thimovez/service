@@ -109,7 +109,7 @@ func (r *authorizationRoutes) refresh(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	tokens, err := r.t.Refresh(refreshToken)
+	tokens, err := r.t.Refresh(c, refreshToken)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}

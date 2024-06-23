@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetUsername(c context.Context, username string) error
 	GetPassword(c context.Context, username string) (hashedPassword string, err error)
 	GetIDByUsername(c context.Context, username string) (id string, err error)
+	GetUserByID(c context.Context, id string) (uID string, err error)
 }
 
 type UserRepo struct {
@@ -73,7 +74,7 @@ func (u *UserRepo) GetIDByUsername(c context.Context, username string) (id strin
 	err := u.db.QueryRowContext(c, qGetID, username).Scan(&id)
 	switch {
 	case err == sql.ErrNoRows:
-		log.Printf("no user with id %d\n", username)
+		log.Printf("no user with username %d\n", username)
 	case err != nil:
 		log.Fatalf("query error: %v\n", err)
 	default:
@@ -83,7 +84,17 @@ func (u *UserRepo) GetIDByUsername(c context.Context, username string) (id strin
 	return id, nil
 }
 
-// TODO return user withoud sensitive data
-func (u *UserRepo) GetUserByID(c context.Context, id string) (user entity.User, error error) {
+// TODO change return parameter
+func (u *UserRepo) GetUserByID(c context.Context, id string) (uID string, err error) {
+	q := `SELECT (id) FROM users WHERE id = $1`
+	err = u.db.QueryRowContext(c, q, id).Scan(&id)
+	switch {
+	case err == sql.ErrNoRows:
+		log.Printf("no user with id %d\n", id)
+	case err != nil:
+		log.Fatalf("query error: %v\n", err)
+	default:
+		return uID, nil
+	}
 	return
 }
