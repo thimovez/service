@@ -17,15 +17,23 @@ type TokenUseCase struct {
 	jwtProvider       tokenapi.JWTProvider
 	accessExpiration  time.Time
 	refreshExpiration time.Time
-	accessSecret      byte
-	refreshSecret     byte
+	accessSecret      string
+	refreshSecret     string
 }
 
-func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.Time) *TokenUseCase {
+const minSecretKeySize = 3
+
+func New(jwtProvider tokenapi.JWTProvider, accessExp time.Time, refreshExp time.Time, secret string) *TokenUseCase {
+	//TODO add err to New function
+	//if secret < minSecretKeySize {
+	//	return fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
+	//}
 	return &TokenUseCase{
 		jwtProvider:       jwtProvider,
 		accessExpiration:  accessExp,
 		refreshExpiration: refreshExp,
+		accessSecret:      secret,
+		refreshSecret:     secret,
 	}
 }
 
@@ -41,7 +49,7 @@ func (t *TokenUseCase) GenerateAccessToken(a entity.LoginRes) (accessToken strin
 		return accessToken, err
 	}
 
-	accessToken, err = t.jwtProvider.SignToken(token, t.accessSecret)
+	accessToken, err = t.jwtProvider.SignToken(token, []byte(t.accessSecret))
 	if err != nil {
 		return accessToken, err
 	}
@@ -60,7 +68,7 @@ func (t *TokenUseCase) GenerateRefreshToken(a entity.LoginRes) (refreshToken str
 		return "", err
 	}
 
-	refreshToken, err = t.jwtProvider.SignToken(token, t.refreshSecret)
+	refreshToken, err = t.jwtProvider.SignToken(token, []byte(t.refreshSecret))
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +77,7 @@ func (t *TokenUseCase) GenerateRefreshToken(a entity.LoginRes) (refreshToken str
 }
 
 func (t *TokenUseCase) VerifyAccessToken(tokenString string) error {
-	err := t.jwtProvider.VerifyToken(tokenString, t.accessSecret)
+	err := t.jwtProvider.VerifyToken(tokenString, []byte(t.accessSecret))
 	if err != nil {
 		return err
 	}
@@ -78,7 +86,7 @@ func (t *TokenUseCase) VerifyAccessToken(tokenString string) error {
 }
 
 func (t *TokenUseCase) VerifyRefreshToken(refreshToken string) error {
-	err := t.jwtProvider.VerifyToken(refreshToken, t.refreshSecret)
+	err := t.jwtProvider.VerifyToken(refreshToken, []byte(t.refreshSecret))
 	if err != nil {
 		return err
 	}

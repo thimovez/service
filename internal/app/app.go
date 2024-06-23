@@ -24,9 +24,6 @@ import (
 	"github.com/thimovez/service/pkg/validator"
 )
 
-const accessTime = 2
-const refreshTime = 12
-
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.LOG.Level)
 
@@ -48,7 +45,7 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("migration error: %w", err))
 	}
 
-	jwtProvider, err := tokenapi.NewJWTProvider(cfg.TOKEN.Secret)
+	tokenAPI, err := tokenapi.New()
 	if err != nil {
 		fmt.Printf("Error initializing JWT provider: %v\n", err)
 		return
@@ -56,7 +53,6 @@ func Run(cfg *config.Config) {
 
 	AccessExp := time.Now().Add(time.Hour * accessTime)
 	RefreshExp := time.Now().Add(time.Hour * accessTime)
-	secret = cfg.TOKEN.Secret
 
 	userUseCase := authorization.New(
 		userRepo.New(db),
@@ -75,7 +71,7 @@ func Run(cfg *config.Config) {
 	//	token.New(jwtProvider),
 	//)
 
-	t := token.New(jwtProvider, AccessExp, RefreshExp, secret)
+	t := token.New(tokenAPI, AccessExp, RefreshExp, cfg.TOKEN.Secret)
 	userAPI.NewAuthorizationRoutes(
 		handler,
 		userUseCase,

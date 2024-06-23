@@ -2,24 +2,19 @@ package tokenapi
 
 import (
 	"fmt"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const minSecretKeySize = 3
-
 type JWTProvider interface {
 	CreateToken(claims map[string]interface{}) (token *jwt.Token, err error)
-	SignToken(token *jwt.Token, secret byte) (signedToken string, err error)
-	VerifyToken(tokenString string, secret byte) error
+	SignToken(token *jwt.Token, secret []byte) (signedToken string, err error)
+	VerifyToken(tokenString string, secret []byte) error
 }
 
 type JWTProviderImpl struct{}
 
-func NewJWTProvider(secretKey string) (JWTProvider, error) {
-	if len(secretKey) < minSecretKeySize {
-		return nil, fmt.Errorf("invalid key size: must be at least %d characters", minSecretKeySize)
-	}
-
+func New() (JWTProvider, error) {
 	return &JWTProviderImpl{}, nil
 }
 
@@ -29,7 +24,7 @@ func (j *JWTProviderImpl) CreateToken(claims map[string]interface{}) (token *jwt
 	return token, nil
 }
 
-func (j *JWTProviderImpl) SignToken(token *jwt.Token, secret byte) (signedToken string, err error) {
+func (j *JWTProviderImpl) SignToken(token *jwt.Token, secret []byte) (signedToken string, err error) {
 	signedToken, err = token.SignedString(secret)
 	if err != nil {
 		return "", nil
@@ -38,7 +33,7 @@ func (j *JWTProviderImpl) SignToken(token *jwt.Token, secret byte) (signedToken 
 	return signedToken, nil
 }
 
-func (j *JWTProviderImpl) VerifyToken(tokenString string, secret byte) error {
+func (j *JWTProviderImpl) VerifyToken(tokenString string, secret []byte) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Make sure to validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
